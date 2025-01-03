@@ -3,18 +3,6 @@ GO
 USE QuanLyLaptop;
 GO
 
--- Loại sản phẩm
-CREATE TABLE LoaiSanPham (
-  MaLoaiSanPham INT PRIMARY KEY IDENTITY(1,1),
-  TenLoaiSanPham NVARCHAR(50) NOT NULL
-);
-
--- Danh mục sản phẩm
-CREATE TABLE DanhMucSanPham (
-  MaDanhMuc INT PRIMARY KEY,
-  TenDanhMuc NVARCHAR(50) NOT NULL
-);
-
 -- Tài khoản người dùng
 CREATE TABLE TaiKhoan (
   MaTaiKhoan INT PRIMARY KEY IDENTITY(1,1),  
@@ -43,7 +31,7 @@ CREATE TABLE KhuyenMai (
   TrangThai INT
 );
 
--- Thương hiệu (mới thêm vào)
+-- Thương hiệu
 CREATE TABLE ThuongHieu (
   MaThuongHieu INT PRIMARY KEY IDENTITY(1,1),
   TenThuongHieu NVARCHAR(255) NOT NULL
@@ -53,9 +41,7 @@ CREATE TABLE ThuongHieu (
 CREATE TABLE SanPham (
   MaSanPham INT PRIMARY KEY IDENTITY(1,1),
   TenSanPham NVARCHAR(255) NOT NULL,
-  LoaiSanPham INT,
-  MaDanhMuc INT,
-  MaThuongHieu INT,  -- Thêm liên kết với bảng ThuongHieu
+  MaThuongHieu INT,  -- Liên kết với bảng ThuongHieu
   XuatXu NVARCHAR(255),
   GiaNhap DECIMAL(10, 2),
   GiaXuat DECIMAL(10, 2),
@@ -66,9 +52,7 @@ CREATE TABLE SanPham (
   CPU NVARCHAR(255),
   MoTa NVARCHAR(MAX),
   TrangThai INT DEFAULT 1,
-  FOREIGN KEY (LoaiSanPham) REFERENCES LoaiSanPham(MaLoaiSanPham),
-  FOREIGN KEY (MaDanhMuc) REFERENCES DanhMucSanPham(MaDanhMuc),
-  FOREIGN KEY (MaThuongHieu) REFERENCES ThuongHieu(MaThuongHieu)  -- Liên kết với ThuongHieu
+  FOREIGN KEY (MaThuongHieu) REFERENCES ThuongHieu(MaThuongHieu)
 );
 
 -- Khách hàng

@@ -12,20 +12,15 @@ class chitietdon extends StatefulWidget {
 
 class _chitietdonState extends State<chitietdon> {
   List<chiTietHoaDonAdmin> chiTietdons = [];
-  final List<OrderItem> orderItems = [
-    OrderItem(
-      name: "Laptop ASUS TUF Gaming F15 FX507ZC4-HN095W",
-      imageUrl: "images/lap13.png",
-      quantity: 1,
-      price: 300000,
-    ),
-    OrderItem(
-      name: "Laptop Gaming Acer Nitro V ANV15-51-58AN",
-      imageUrl: "images/lap13.png",
-      quantity: 2,
-      price: 450000,
-    ),
-  ];
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final hoaDon = ModalRoute.of(context)!.settings.arguments as hoaDonAdmin;
+      fetchDSDon(hoaDon.maHoaDon); // Tải danh sách khi widget được khởi tạo
+    });
+  }
 
   Future<void> fetchDSDon(int ma) async {
     final response = await http
@@ -39,10 +34,49 @@ class _chitietdonState extends State<chitietdon> {
     }
   }
 
+  Future<void> capNhatSoLuong(
+      BuildContext context, int maHoaDon, int maSanPham, int soLuong) async {
+    final reponse = await http.put(
+        Uri.parse(
+            'https://10.0.2.2:7042/chiTietHoaDon/Sua/soLuong?maHoaDon=$maHoaDon&maSanPham=$maSanPham&soLuongMoi=$soLuong'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, int>{'soLuong': soLuong}));
+    if (reponse.statusCode == 200) {
+      final data = json.decode(reponse.body);
+      if (data['success']) {
+        Navigator.pop(context, true);
+      } else {
+        thongBaoLoi(context, data['message']);
+      }
+    } else {
+      thongBaoLoi(context, "Lỗi khi cập nhật thông tin");
+    }
+  }
+
+  void thongBaoLoi(BuildContext context, String mess) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text("Lỗi"),
+            content: Text(mess),
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text("OK"))
+            ],
+          );
+        });
+  }
+
   // Hàm cập nhật số lượng sản phẩm
   void _updateQuantity(int index, int newQuantity) {
     setState(() {
-      orderItems[index].quantity = newQuantity;
+      chiTietdons[index].soLuong = newQuantity;
     });
   }
 
@@ -50,7 +84,7 @@ class _chitietdonState extends State<chitietdon> {
   Widget build(BuildContext context) {
     hoaDonAdmin hoaDon =
         ModalRoute.of(context)!.settings.arguments as hoaDonAdmin;
-
+    // fetchDSDon(hoaDon.maHoaDon);
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -77,8 +111,8 @@ class _chitietdonState extends State<chitietdon> {
                   backgroundImage:
                       NetworkImage('https://via.placeholder.com/150'),
                 ),
-                title: Text("Nguyễn Văn A"),
-                subtitle: Text("Số điện thoại: 0901234567"),
+                title: Text(hoaDon.tenKhachHang),
+                subtitle: Text(hoaDon.soDienThoai),
               ),
               Divider(),
 
@@ -91,9 +125,9 @@ class _chitietdonState extends State<chitietdon> {
               ListView.builder(
                 shrinkWrap: true,
                 physics: NeverScrollableScrollPhysics(),
-                itemCount: orderItems.length,
+                itemCount: chiTietdons.length,
                 itemBuilder: (context, index) {
-                  final item = orderItems[index];
+                  final item = chiTietdons[index];
                   return OrderItemCard(
                     item: item,
                     onQuantityChanged: (newQuantity) {
@@ -110,7 +144,33 @@ class _chitietdonState extends State<chitietdon> {
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 8),
-              StatusCard(),
+              Card(
+                elevation: 4,
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    children: [
+                      Row(
+                        children: [
+                          Icon(Icons.access_time, color: Colors.orange),
+                          SizedBox(width: 8),
+                          Text(
+                              '${hoaDon.trangThai == 3 ? "Hoàn thành" : hoaDon.trangThai == 0 ? "Đã hủy" : hoaDon.trangThai == 2 ? "Đang giao" : "Chờ xác nhận"}',
+                              style: TextStyle(
+                                  fontSize: 16,
+                                  color: hoaDon.trangThai == 3
+                                      ? Colors.greenAccent
+                                      : hoaDon.trangThai == 0
+                                          ? Colors.red
+                                          : hoaDon.trangThai == 2
+                                              ? Colors.lightBlue
+                                              : Colors.orange)),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
               Divider(),
 
               // Tổng cộng
@@ -119,7 +179,7 @@ class _chitietdonState extends State<chitietdon> {
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 8),
-              TotalPriceCard(orderItems: orderItems),
+              TotalPriceCard(orderItems: chiTietdons),
               Divider(),
 
               // Các nút hành động
@@ -141,14 +201,25 @@ class _chitietdonState extends State<chitietdon> {
                             child: Text("Hủy"),
                           ),
                           ElevatedButton(
-                            onPressed: () {
+                            onPressed: () async {
                               Navigator.of(context).pop(); // Đóng dialog
                               // Thực hiện cập nhật thông tin
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
-                                    content: Text(
-                                        "Thông tin sản phẩm đã được cập nhật!")),
+                                  content: Text(
+                                      "Thông tin sản phẩm đã được cập nhật!"),
+                                  backgroundColor: Colors.green,
+                                ),
                               );
+                              for (var item in chiTietdons) {
+                                await capNhatSoLuong(
+                                  context,
+                                  hoaDon.maHoaDon,
+                                  item.maSanPham,
+                                  item.soLuong,
+                                );
+                              }
+                              Navigator.of(context).pop();
                             },
                             child: Text("Xác nhận"),
                           ),
@@ -171,22 +242,8 @@ class _chitietdonState extends State<chitietdon> {
   }
 }
 
-class OrderItem {
-  final String name;
-  final String imageUrl;
-  int quantity; // quantity cần là int để có thể thay đổi
-  final int price;
-
-  OrderItem({
-    required this.name,
-    required this.imageUrl,
-    required this.quantity,
-    required this.price,
-  });
-}
-
 class OrderItemCard extends StatelessWidget {
-  final OrderItem item;
+  final chiTietHoaDonAdmin item;
   final Function(int) onQuantityChanged;
 
   OrderItemCard({required this.item, required this.onQuantityChanged});
@@ -199,8 +256,8 @@ class OrderItemCard extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         child: Row(
           children: [
-            Image.asset(
-              item.imageUrl,
+            Image.network(
+              item.hinhAnh,
               width: 100,
               height: 100,
             ),
@@ -209,10 +266,10 @@ class OrderItemCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(item.name,
+                  Text(item.tenSanPham,
                       style: TextStyle(fontWeight: FontWeight.bold)),
                   SizedBox(height: 8),
-                  Text("Số lượng: ${item.quantity}"),
+                  Text("Số lượng: ${item.soLuong}"),
                   SizedBox(height: 8),
                   // Các nút điều chỉnh số lượng
                   Row(
@@ -220,16 +277,16 @@ class OrderItemCard extends StatelessWidget {
                       IconButton(
                         icon: Icon(Icons.remove),
                         onPressed: () {
-                          if (item.quantity > 1) {
-                            onQuantityChanged(item.quantity - 1);
+                          if (item.soLuong > 1) {
+                            onQuantityChanged(item.soLuong - 1);
                           }
                         },
                       ),
-                      Text(item.quantity.toString()),
+                      Text(item.soLuong.toString()),
                       IconButton(
                         icon: Icon(Icons.add),
                         onPressed: () {
-                          onQuantityChanged(item.quantity + 1);
+                          onQuantityChanged(item.soLuong + 1);
                         },
                       ),
                     ],
@@ -237,31 +294,7 @@ class OrderItemCard extends StatelessWidget {
                 ],
               ),
             ),
-            Text("${item.price * item.quantity} VNĐ",
-                style: TextStyle(color: Colors.orange)),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class StatusCard extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      elevation: 4,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            Row(
-              children: [
-                Icon(Icons.access_time, color: Colors.orange),
-                SizedBox(width: 8),
-                Text("Đang giao hàng", style: TextStyle(fontSize: 16)),
-              ],
-            ),
+            Text("${item.Gia} VNĐ", style: TextStyle(color: Colors.orange)),
           ],
         ),
       ),
@@ -270,14 +303,14 @@ class StatusCard extends StatelessWidget {
 }
 
 class TotalPriceCard extends StatelessWidget {
-  final List<OrderItem> orderItems;
+  final List<chiTietHoaDonAdmin> orderItems;
 
   TotalPriceCard({required this.orderItems});
 
   @override
   Widget build(BuildContext context) {
-    int totalPrice =
-        orderItems.fold(0, (sum, item) => sum + (item.price * item.quantity));
+    double totalPrice =
+        orderItems.fold(0, (sum, item) => sum + (item.Gia * item.soLuong));
 
     return Card(
       elevation: 4,

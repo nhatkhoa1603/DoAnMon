@@ -1,9 +1,12 @@
 import 'dart:async';
+import 'dart:convert';
+import 'package:doanmonhoc/model/SanPham.dart';
 import 'package:doanmonhoc/view/chitietsp.dart';
 import 'package:doanmonhoc/view/giohang.dart';
 import 'package:doanmonhoc/view/taikhoan.dart';
 import 'danhmuc.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class TrangChu extends StatefulWidget {
   @override
@@ -11,6 +14,22 @@ class TrangChu extends StatefulWidget {
 }
 
 class _TrangChuState extends State<TrangChu> {
+//xu ly api
+
+  List<Sanpham> sanPhams = [];
+
+  Future<void> fetchdsSanPham() async {
+    final response =
+        await http.get(Uri.parse("https://10.0.2.2:7042/sanPham/danhSach"));
+    if (response.statusCode == 200) {
+      final List<dynamic> data = json.decode(response.body)['data'];
+      setState(() {
+        sanPhams = data.map((value) => Sanpham.fromJson(value)).toList();
+      });
+    }
+  }
+
+//ht
   final PageController _pageController = PageController();
   Timer? _timer;
   int _currentPage = 0;
@@ -57,40 +76,11 @@ class _TrangChuState extends State<TrangChu> {
     },
   ];
 
-  final List<Map<String, dynamic>> featuredLaptops = [
-    {
-      'name': 'MacBook Pro 14"',
-      'image': 'images/lap1.png',
-      'price': 45990000,
-      'originalPrice': 49990000,
-      'specs': 'M2 Pro, 16GB RAM, 512GB SSD',
-      'brand': 'Apple',
-      'discount': 8,
-    },
-    {
-      'name': 'ROG Strix G15',
-      'image': 'images/lap1.png',
-      'price': 32990000,
-      'originalPrice': 35990000,
-      'specs': 'RTX 4060, i7-13700H, 16GB',
-      'brand': 'ASUS',
-      'discount': 8,
-    },
-    {
-      'name': 'ROG Strix G15',
-      'image': 'images/lap1.png',
-      'price': 32990000,
-      'originalPrice': 35990000,
-      'specs': 'RTX 4060, i7-13700H, 16GB',
-      'brand': 'ASUS',
-      'discount': 8,
-    },
-  ];
-
   @override
   void initState() {
     super.initState();
     _startAutoScroll();
+    fetchdsSanPham(); //1
   }
 
   void _onItemTapped(int index) {
@@ -307,9 +297,9 @@ class _TrangChuState extends State<TrangChu> {
             height: 320,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
-              itemCount: featuredLaptops.length,
+              itemCount: sanPhams.length, //2
               itemBuilder: (context, index) {
-                final laptop = featuredLaptops[index];
+                final laptop = sanPhams[index]; //3
                 return GestureDetector(
                   onTap: () {
                     Navigator.push(
@@ -339,33 +329,13 @@ class _TrangChuState extends State<TrangChu> {
                             ClipRRect(
                               borderRadius: BorderRadius.vertical(
                                   top: Radius.circular(12)),
-                              child: Image.asset(
-                                laptop['image'],
+                              child: Image.network(
+                                laptop.hinhAnh,
                                 height: 100,
                                 width: double.infinity,
                                 fit: BoxFit.cover,
                               ),
                             ),
-                            if (laptop['discount'] != null)
-                              Positioned(
-                                top: 8,
-                                right: 8,
-                                child: Container(
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 8, vertical: 4),
-                                  decoration: BoxDecoration(
-                                    color: Colors.red,
-                                    borderRadius: BorderRadius.circular(4),
-                                  ),
-                                  child: Text(
-                                    '-${laptop['discount']}%',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                              ),
                           ],
                         ),
                         Padding(
@@ -374,7 +344,7 @@ class _TrangChuState extends State<TrangChu> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                laptop['brand'],
+                                '${laptop.maThuongHieu}',
                                 style: TextStyle(
                                   color: Colors.grey[600],
                                   fontSize: 12,
@@ -382,7 +352,7 @@ class _TrangChuState extends State<TrangChu> {
                               ),
                               SizedBox(height: 4),
                               Text(
-                                laptop['name'],
+                                '${laptop.tenSanPham}',
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
@@ -392,7 +362,7 @@ class _TrangChuState extends State<TrangChu> {
                               ),
                               SizedBox(height: 4),
                               Text(
-                                laptop['specs'],
+                                "Ram :${laptop.Ram} CPU :${laptop.CPU}",
                                 style: TextStyle(
                                   color: Colors.grey[600],
                                   fontSize: 12,
@@ -402,22 +372,23 @@ class _TrangChuState extends State<TrangChu> {
                               ),
                               SizedBox(height: 8),
                               Text(
-                                '${laptop['price'].toString().replaceAllMapped(RegExp(r'(\d{3})(?=\d)'), (Match m) => '${m[1]},')}đ',
+                                // '${laptop['price'].toString().replaceAllMapped(RegExp(r'(\d{3})(?=\d)'), (Match m) => '${m[1]},')}đ'
+                                "${laptop.giaXuat}",
                                 style: TextStyle(
                                   color: Colors.red,
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              if (laptop['originalPrice'] != null)
-                                Text(
-                                  '${laptop['originalPrice'].toString().replaceAllMapped(RegExp(r'(\d{3})(?=\d)'), (Match m) => '${m[1]},')}đ',
-                                  style: TextStyle(
-                                    color: Colors.grey,
-                                    fontSize: 14,
-                                    decoration: TextDecoration.lineThrough,
-                                  ),
-                                ),
+                              // if (laptop['originalPrice'] != null)
+                              //   Text(
+                              //     '${laptop['originalPrice'].toString().replaceAllMapped(RegExp(r'(\d{3})(?=\d)'), (Match m) => '${m[1]},')}đ',
+                              //     style: TextStyle(
+                              //       color: Colors.grey,
+                              //       fontSize: 14,
+                              //       decoration: TextDecoration.lineThrough,
+                              //     ),
+                              //   ),
                             ],
                           ),
                         ),

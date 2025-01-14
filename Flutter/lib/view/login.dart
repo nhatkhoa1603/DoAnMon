@@ -1,13 +1,20 @@
-import 'package:doanmonhoc/view/forgotpassword.dart';
-import 'package:doanmonhoc/view/sign_up.dart';
-import 'package:doanmonhoc/view/trangchu.dart';
 import 'package:flutter/material.dart';
-//import '../ForgotPassword/forgotpassword.dart';
-//import '../LoginSignin/sign_up.dart';
-import '../Widget/button.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'dart:io';
+
 import '../Widget/text_field.dart';
-import '../Widget/snack_bar.dart';
-//import '../screen/chitietsp.dart';
+import 'sign_up.dart';
+import 'trangchu.dart';
+
+class MyHttpOverrides extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext? context) {
+    return super.createHttpClient(context)
+      ..badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
+  }
+}
 
 class LoginApp extends StatefulWidget {
   const LoginApp({super.key});
@@ -17,21 +24,44 @@ class LoginApp extends StatefulWidget {
 }
 
 class _LoginAppState extends State<LoginApp> {
-  final TextEditingController emailController = TextEditingController();
+  final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   bool isLoading = false;
 
   @override
   void dispose() {
-    emailController.dispose();
+    usernameController.dispose();
     passwordController.dispose();
     super.dispose();
   }
 
+  Future<Map<String, dynamic>> loginApi(
+      String username, String password) async {
+    try {
+      final response = await http.post(
+        Uri.parse('https://10.0.2.2:7042/taiKhoan/DangNhap'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'tenDangNhap': username,
+          'MatKhau': password,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        throw Exception('Lỗi đăng nhập: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Lỗi mạng: $e');
+    }
+  }
+
   void loginUsers() async {
-    final email = emailController.text.trim();
+    final username = usernameController.text.trim();
     final password = passwordController.text.trim();
-    if (email.isEmpty || password.isEmpty) {
+
+    if (username.isEmpty || password.isEmpty) {
       showSnackBar(context, "Vui lòng điền đầy đủ thông tin");
       return;
     }
@@ -39,22 +69,29 @@ class _LoginAppState extends State<LoginApp> {
     setState(() {
       isLoading = true;
     });
-    Future.delayed(const Duration(seconds: 2), () {
-      setState(() {
-        isLoading = false;
-      });
 
-      if (email == "1@gmail.com" && password == "1") {
+    try {
+      final response = await loginApi(username, password);
+      print('Response data: $response');
+
+      if (response['success'] == true) {
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
             builder: (context) => TrangChu(),
+            settings: RouteSettings(arguments: response['maTaiKhoan']),
           ),
         );
         showSnackBar(context, "Đăng nhập thành công!");
       } else {
-        showSnackBar(context, "Email hoặc mật khẩu không đúng");
+        showSnackBar(context, response['message'] ?? "Đăng nhập thất bại");
       }
-    });
+    } catch (e) {
+      showSnackBar(context, "Lỗi kết nối: $e");
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   @override
@@ -67,31 +104,27 @@ class _LoginAppState extends State<LoginApp> {
             Padding(
               padding: const EdgeInsets.all(18),
               child: Image.asset(
-                "images/login.jpg",
+                "images/signup.jpg",
                 fit: BoxFit.cover,
-                height: 300,
+                height: 250,
                 width: 300,
               ),
             ),
-            TextFieldInpute(
-              textEditingController: emailController,
-              hintText: "Nhập email của bạn",
-              icon: Icons.email,
+            TextFieldInput(
+              textEditingController: usernameController,
+              hintText: "Nhập tên đăng nhập của bạn",
+              icon: Icons.person,
             ),
-            TextFieldInpute(
+            TextFieldInput(
               isPass: true,
               textEditingController: passwordController,
               hintText: "Nhập mật khẩu",
               icon: Icons.lock,
             ),
-            const Forgotpassword(),
             isLoading
                 ? const CircularProgressIndicator()
                 : MyButton(onTap: loginUsers, text: "Đăng nhập"),
-            const SizedBox(
-              height: 17,
-            ),
-            //SizedBox(height: 70,),
+            const SizedBox(height: 17),
             Row(
               children: [
                 Expanded(
@@ -109,12 +142,13 @@ class _LoginAppState extends State<LoginApp> {
                 ),
               ],
             ),
-
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text("Bạn Chưa Có Tài Khoản ? ",
-                    style: TextStyle(fontSize: 16)),
+                const Text(
+                  "Bạn Chưa Có Tài Khoản ? ",
+                  style: TextStyle(fontSize: 16),
+                ),
                 GestureDetector(
                   onTap: () {
                     Navigator.push(
@@ -127,9 +161,9 @@ class _LoginAppState extends State<LoginApp> {
                   child: const Text(
                     "Đăng Ký Ngay",
                     style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                        color: Color(0xFF2196F3)),
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
                   ),
                 ),
               ],
@@ -140,38 +174,9 @@ class _LoginAppState extends State<LoginApp> {
     );
   }
 }
-// Widget/forgotpassword.dart
-//import 'package:flutter/material.dart';
-//import '../screen/forgotpassword.dart';
 
-class Forgotpassword extends StatelessWidget {
-  const Forgotpassword({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 18),
-      child: Align(
-        alignment: Alignment.centerRight,
-        child: InkWell(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const ForgotPasswordScreen(),
-              ),
-            );
-          },
-          child: const Text(
-            "Quên mật khẩu ?",
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 16,
-              color: Color(0xFF2196F3),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
+void showSnackBar(BuildContext context, String message) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(content: Text(message)),
+  );
 }

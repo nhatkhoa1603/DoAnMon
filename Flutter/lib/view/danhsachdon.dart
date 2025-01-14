@@ -35,7 +35,6 @@ class _QuanLyDonHangState extends State<QuanLyDonHang> {
   }
 
   int selectedFilter = -1;
-  // List<Map<String, String>> filteredOrders = [];
 
   @override
   void initState() {
@@ -88,6 +87,10 @@ class _QuanLyDonHangState extends State<QuanLyDonHang> {
                     ),
                     const PopupMenuItem(
                       value: 2,
+                      child: Text('Đang giao'),
+                    ),
+                    const PopupMenuItem(
+                      value: 3,
                       child: Text('Đã hoàn thành'),
                     ),
                     const PopupMenuItem(
@@ -99,7 +102,7 @@ class _QuanLyDonHangState extends State<QuanLyDonHang> {
                     onPressed: null,
                     icon: const Icon(Icons.filter_list),
                     label: Text(
-                        'Lọc: ${selectedFilter == -1 ? "Tất cả" : selectedFilter == 0 ? "Đã hủy" : selectedFilter == 1 ? "Chờ xác nhận" : "Đã hoàn thành"} '),
+                        'Lọc: ${selectedFilter == -1 ? "Tất cả" : selectedFilter == 0 ? "Đã hủy" : selectedFilter == 1 ? "Chờ xác nhận" : selectedFilter == 2 ? "Đang giao" : "Đã hoàn thành"} '),
                   ),
                 ),
               ],
@@ -160,13 +163,15 @@ class _QuanLyDonHangState extends State<QuanLyDonHang> {
                                       arguments: hoaDons[index]);
                                 },
                               ),
-                              IconButton(
-                                icon:
-                                    const Icon(Icons.delete, color: Colors.red),
-                                onPressed: () {
-                                  // Xóa đơn hàng
-                                },
-                              ),
+                              hoaDons[index].trangThai == 1
+                                  ? IconButton(
+                                      icon: const Icon(Icons.check,
+                                          color: Colors.green),
+                                      onPressed: () {
+                                        // Xử lý logic khi bấm nút (ví dụ: xác nhận đơn hàng)
+                                      },
+                                    )
+                                  : SizedBox.shrink(),
                             ],
                           ),
                         ],

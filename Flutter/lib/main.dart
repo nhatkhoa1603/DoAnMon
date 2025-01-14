@@ -45,7 +45,6 @@ class MyApp extends StatelessWidget {
       routes: {
         '/dangnhap': (context) => LoginApp(),
         '/signup': (context) => SignUpScreen(),
-        '/forgotpassword': (context) => Forgotpassword(),
         '/trangchu': (context) => TrangChu(),
         '/danhmuc': (context) => DanhMuc(),
         '/taikhoan': (context) => TaiKhoan(),

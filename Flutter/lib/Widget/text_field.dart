@@ -1,24 +1,69 @@
 import 'package:flutter/material.dart';
 
-class TextFieldInpute extends StatefulWidget {
+// Custom Button Widget
+class MyButton extends StatelessWidget {
+  final VoidCallback onTap;
+  final String text;
+
+  const MyButton({
+    super.key,
+    required this.onTap,
+    required this.text,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: EdgeInsets.all(20),
+        child: Container(
+          alignment: Alignment.center,
+          padding: const EdgeInsets.symmetric(
+            vertical: 18,
+          ),
+          decoration: ShapeDecoration(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(18),
+            ),
+            color: Colors.blue,
+          ),
+          child: Text(
+            text,
+            style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// Custom Text Field Widget
+class TextFieldInput extends StatefulWidget {
   final TextEditingController textEditingController;
   final bool isPass;
   final String hintText;
   final IconData icon;
+  final TextInputType? keyboardType;
 
-  const TextFieldInpute({
+  const TextFieldInput({
     super.key,
     required this.textEditingController,
     this.isPass = false,
     required this.hintText,
     required this.icon,
+    this.keyboardType,
   });
 
   @override
-  State<TextFieldInpute> createState() => _TextFieldInputeState();
+  State<TextFieldInput> createState() => _TextFieldInputState();
 }
 
-class _TextFieldInputeState extends State<TextFieldInpute> {
+class _TextFieldInputState extends State<TextFieldInput> {
   bool isPasswordVisible = false;
 
   @override
@@ -71,4 +116,13 @@ class _TextFieldInputeState extends State<TextFieldInpute> {
       ),
     );
   }
+}
+
+// Utility function for showing SnackBar
+void showSnackBar(BuildContext context, String text) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text(text),
+    ),
+  );
 }

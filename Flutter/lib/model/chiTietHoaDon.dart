@@ -2,8 +2,8 @@ class chiTietHoaDonAdmin {
   final int maHoaDon;
   final int maSanPham;
   final String tenSanPham;
-  final int soLuong;
-  final int Gia;
+  int soLuong;
+  final double Gia;
   final String hinhAnh;
 
   chiTietHoaDonAdmin(

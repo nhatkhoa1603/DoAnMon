@@ -170,10 +170,10 @@ namespace QLyLapTop.Controllers
 
             if (taiKhoan == null )
             {
-                return Unauthorized(new { Message = "Tên đăng nhập hoặc mật khẩu không đúng." });
+                return Unauthorized(new { success = false, Message = "Tên đăng nhập hoặc mật khẩu không đúng." });
             }
 
-            return Ok(new { Message = "Đăng nhập thành công!", data = taiKhoan });
+            return Ok(new { success = true, Message = "Đăng nhập thành công!", data = taiKhoan });
         }
 
 

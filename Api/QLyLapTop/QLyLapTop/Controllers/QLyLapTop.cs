@@ -291,6 +291,7 @@ namespace QLyLapTop.Controllers
                             cthd.MaSanPham,
                             sp.TenSanPham,
                             sp.GiaXuat,
+                            sp.HinhAnh,
                             cthd.SoLuong,
                             cthd.GiaBan,
                             cthd.GiamGia,
@@ -299,12 +300,12 @@ namespace QLyLapTop.Controllers
                     )
                     .ToListAsync();
 
-                if (!chiTietHoaDons.Any())
+                if (!hoadon.Any())
                 {
-                    return NotFound(new { message = "Không tìm thấy chi tiết hóa đơn." });
+                    return NotFound(new { success = false, message = "Không tìm thấy chi tiết hóa đơn." });
                 }
 
-                return Ok(chiTietHoaDons);
+                return Ok( new { success = true, data = chiTietHoaDons });
             }
             catch (Exception ex)
             {

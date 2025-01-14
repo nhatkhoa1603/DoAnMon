@@ -1,19 +1,19 @@
-class Hoadon {
+class hoaDonAdmin {
   final int maHoaDon;
   final String tenKhachHang;
   final String soDienThoai;
   final int trangThai;
   final String ngayDatHang;
 
-  Hoadon(
+  hoaDonAdmin(
       {required this.maHoaDon,
       required this.tenKhachHang,
       required this.soDienThoai,
       required this.trangThai,
       required this.ngayDatHang});
 
-  factory Hoadon.fromJson(Map<String, dynamic> json) {
-    return Hoadon(
+  factory hoaDonAdmin.fromJson(Map<String, dynamic> json) {
+    return hoaDonAdmin(
         maHoaDon: json['maDonHang'],
         tenKhachHang: json['tenKhachHang'],
         soDienThoai: json['soDienThoai'],

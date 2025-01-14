@@ -1,4 +1,9 @@
+import 'dart:convert';
+
+import 'package:doanmonhoc/model/chiTietHoaDon.dart';
+import 'package:doanmonhoc/model/hoaDonAdmin.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class chitietdon extends StatefulWidget {
   @override
@@ -6,6 +11,7 @@ class chitietdon extends StatefulWidget {
 }
 
 class _chitietdonState extends State<chitietdon> {
+  List<chiTietHoaDonAdmin> chiTietdons = [];
   final List<OrderItem> orderItems = [
     OrderItem(
       name: "Laptop ASUS TUF Gaming F15 FX507ZC4-HN095W",
@@ -21,6 +27,18 @@ class _chitietdonState extends State<chitietdon> {
     ),
   ];
 
+  Future<void> fetchDSDon(int ma) async {
+    final response = await http
+        .get(Uri.parse("https://10.0.2.2:7042/chiTietHoaDon/danhSach/$ma"));
+    if (response.statusCode == 200) {
+      final List<dynamic> data = json.decode(response.body)['data'];
+      setState(() {
+        chiTietdons =
+            data.map((value) => chiTietHoaDonAdmin.fromJson(value)).toList();
+      });
+    }
+  }
+
   // Hàm cập nhật số lượng sản phẩm
   void _updateQuantity(int index, int newQuantity) {
     setState(() {
@@ -30,6 +48,9 @@ class _chitietdonState extends State<chitietdon> {
 
   @override
   Widget build(BuildContext context) {
+    hoaDonAdmin hoaDon =
+        ModalRoute.of(context)!.settings.arguments as hoaDonAdmin;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(

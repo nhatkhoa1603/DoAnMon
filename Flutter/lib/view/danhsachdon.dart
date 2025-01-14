@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:doanmonhoc/model/hoaDon.dart';
+import 'package:doanmonhoc/model/hoaDonAdmin.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -10,7 +10,7 @@ class QuanLyDonHang extends StatefulWidget {
 }
 
 class _QuanLyDonHangState extends State<QuanLyDonHang> {
-  List<Hoadon> hoaDons = [];
+  List<hoaDonAdmin> hoaDons = [];
 
   Future<void> fetchDSDon() async {
     final response =
@@ -18,7 +18,7 @@ class _QuanLyDonHangState extends State<QuanLyDonHang> {
     if (response.statusCode == 200) {
       final List<dynamic> data = json.decode(response.body)['data'];
       setState(() {
-        hoaDons = data.map((value) => Hoadon.fromJson(value)).toList();
+        hoaDons = data.map((value) => hoaDonAdmin.fromJson(value)).toList();
       });
     }
   }
@@ -29,7 +29,7 @@ class _QuanLyDonHangState extends State<QuanLyDonHang> {
     if (response.statusCode == 200) {
       final List<dynamic> data = json.decode(response.body)['data'];
       setState(() {
-        hoaDons = data.map((value) => Hoadon.fromJson(value)).toList();
+        hoaDons = data.map((value) => hoaDonAdmin.fromJson(value)).toList();
       });
     }
   }
@@ -156,7 +156,8 @@ class _QuanLyDonHangState extends State<QuanLyDonHang> {
                                 icon: const Icon(Icons.visibility,
                                     color: Colors.blue),
                                 onPressed: () {
-                                  Navigator.pushNamed(context, "/chitietdon");
+                                  Navigator.pushNamed(context, "/chitietdon",
+                                      arguments: hoaDons[index]);
                                 },
                               ),
                               IconButton(

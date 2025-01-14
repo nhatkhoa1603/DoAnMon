@@ -45,6 +45,9 @@ public partial class KetNoiCSDL : DbContext
     {
 
         OnModelCreatingPartial(modelBuilder);
+
+        modelBuilder.Entity<GioHang>()
+           .HasKey(g => new { g.MaKhachHang, g.MaSanPham });
     }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);

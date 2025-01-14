@@ -1,36 +1,36 @@
 import 'dart:io';
-import 'package:doanmonhoc/LoginSignin/homeScreen.dart';
-import 'package:doanmonhoc/screen/chitietsp.dart';
-import 'package:doanmonhoc/screen/dien_tt_mua_hang.dart';
-import 'package:doanmonhoc/screen/giohang.dart';
-import 'package:doanmonhoc/screen/thongTinNguoiDungScreen.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart'; // Để sử dụng kIsWeb
+
+import 'package:doanmonhoc/view/chitietdon.dart';
+import 'package:doanmonhoc/view/danhmuc.dart';
+import 'package:doanmonhoc/view/danhsachdon.dart';
+import 'package:doanmonhoc/view/donhangsreen.dart';
+//import 'package:doanmonhoc/screen/forgotpassword.dart';
+import 'package:doanmonhoc/view/login.dart';
+import 'package:doanmonhoc/view/setting.dart';
+import 'package:doanmonhoc/view/sign_up.dart';
+import 'package:doanmonhoc/view/taikhoan.dart';
+import 'package:doanmonhoc/view/thanhtoan.dart';
+import 'package:doanmonhoc/view/thongtincanhan.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
-import '../LoginSignin/login.dart';
+//import 'screen/danhmuc.dart';
+//import 'screen/taikhoang.dart';
+import 'view/trangchu.dart';
+import 'view/chitietsp.dart';
+import 'view/thongtinmuahang.dart';
+import 'view/giohang.dart';
+//import '../LoginSignin/login.dart';
 
-Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-
-  // Khởi tạo Firebase tùy theo môi trường Web hoặc Di động
-  if (kIsWeb) {
-    await Firebase.initializeApp(
-      options: const FirebaseOptions(
-        apiKey: "AIzaSyB1aptfQX8n-H6WjF1WevAHhhL5Y8MBkAs",
-        authDomain: "stationery-c01.firebaseapp.com",
-        databaseURL: "https://stationery-c01-default-rtdb.firebaseio.com",
-        projectId: "stationery-c01",
-        storageBucket: "stationery-c01.appspot.com",
-        messagingSenderId: "1036464544050",
-        appId: "1:1036464544050:web:2eac9b979f608bae04df2b",
-      ),
-    );
-  } else {
-    await Firebase
-        .initializeApp(); // Mobile tự động sử dụng file google-services.json
+class MyHttpOverrides extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext? context) {
+    return super.createHttpClient(context)
+      ..badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
   }
+}
 
+void main() {
+  HttpOverrides.global = MyHttpOverrides();
   runApp(const MyApp());
 }
 
@@ -39,6 +39,26 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(debugShowCheckedModeBanner: false, home: Chitietsp());
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      initialRoute: '/dangnhap',
+      routes: {
+        '/dangnhap': (context) => LoginApp(),
+        '/signup': (context) => SignUpScreen(),
+        '/forgotpassword': (context) => Forgotpassword(),
+        '/trangchu': (context) => TrangChu(),
+        '/danhmuc': (context) => DanhMuc(),
+        '/taikhoan': (context) => TaiKhoan(),
+        '/giohang': (context) => Giohang(),
+        '/caidat': (context) => CaiDat(),
+        '/chinhsuattcanhan': (context) => PersonalInfoScreen(),
+        '/thongtinmuahang': (context) => thong_tin_mua_hang(),
+        '/chitietsanpham': (context) => Chitietsp(),
+        '/danhsachdon': (context) => QuanLyDonHang(),
+        '/chitietdon': (context) => chitietdon(),
+        '/donhangcuatoi': (context) => DonHangScreen(),
+        '/thanhtoan': (context) => ThanhToan(),
+      },
+    );
   }
 }

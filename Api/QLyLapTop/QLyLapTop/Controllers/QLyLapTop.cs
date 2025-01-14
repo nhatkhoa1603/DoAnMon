@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Org.BouncyCastle.Crypto.Generators;
 using QLyLapTop.MyModels;
 using System.Threading.Tasks;
 
@@ -28,7 +29,7 @@ namespace QLyLapTop.Controllers
         }
 
         [HttpGet]
-        [Route("/sanPham/timkiem/{id}")]
+        [Route("/sanPham/chiTietSanPham/{id}")]
         public async Task<ActionResult<IEnumerable<SanPham>>> thongTinSanPham(int id)
         {
             var sanPhams = await dbc.SanPhams
@@ -101,8 +102,105 @@ namespace QLyLapTop.Controllers
             return Ok(new { success = true, message = "Cập nhật Thông tin khách hàng thành công!" });
         }
 
+        [HttpPost]
+        [Route("/khachHang/Them")]
+        public IActionResult ThemKhachHang(KhachHang obj)
+        {
+            try
+            {
+                var ktraEmail = dbc.KhachHangs.Where(kt => kt.Email == obj.Email).ToList();
+                var ktraSDT = dbc.KhachHangs.Where(kt => kt.SoDienThoai == obj.SoDienThoai).ToList();
+
+                if (ktraEmail.Count >0)
+                {
+                    return NotFound(new { success = false, message = $"Trùng Email!" });
+                }
+                if (ktraSDT.Count >0)
+                {
+                    return NotFound(new { success = false, message = $"Trùng SĐT!" });
+                }
+                //obj.TrangThai = 1; // Gán trạng thái cho giỏ hàng (ví dụ: 1 = Đang xử lý)
+                dbc.KhachHangs.Add(obj);
+
+                dbc.SaveChanges();
+
+                return Ok(new { success = true, message = "Thêm khach hang thành công!" });
+
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Có lỗi xảy ra khi lưu thay đổi. Vui lòng kiểm tra lại dữ liệu.");
+            }
+  
+        }
+
+        //------------------- Tai Khoan ------------------------//
+        [HttpPost]
+        [Route("/taiKhoan/Them")]
+        public IActionResult ThemTaiKhoan(String tenDangNhap,TaiKhoan obj)
+        {
+            try
+            {
+                var ktra = dbc.TaiKhoans.Where(kt => kt.TenDangNhap == obj.TenDangNhap).ToList();
+
+                if (ktra.Count > 0)
+                {
+                    return NotFound(new { success = false, message = $"Ten Dang nhap da ton tai!" });
+                }
+
+                dbc.TaiKhoans.Add(obj);
+
+                dbc.SaveChanges();
+
+                return Ok(new { success = true, message = "Thêm tai khoan thành công!" });
+
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Có lỗi xảy ra khi lưu thay đổi. Vui lòng kiểm tra lại dữ liệu.");
+            }
+        }
+
+        [HttpPost]
+        [Route("/taiKhoan/DangNhap")]
+        public async Task<IActionResult> DangNhap( TaiKhoan obj)
+        {
+            var taiKhoan = await dbc.TaiKhoans
+                .FirstOrDefaultAsync(t => t.TenDangNhap == obj.TenDangNhap && t.MatKhau == obj.MatKhau && t.TrangThai);
+
+            if (taiKhoan == null )
+            {
+                return Unauthorized(new { Message = "Tên đăng nhập hoặc mật khẩu không đúng." });
+            }
+
+            return Ok(new { Message = "Đăng nhập thành công!", data = taiKhoan });
+        }
+
+
+        [HttpPost]
+        [Route("/taiKhoan/doiMatKhau/{id}")]
+        public async Task<IActionResult> DangNhap(int id,String mkcu, TaiKhoan obj)
+        {
+            var taiKhoan = await dbc.TaiKhoans
+                .FirstOrDefaultAsync(t => t.MaTaiKhoan == id && t.TrangThai);
+            var ktraMK = await dbc.TaiKhoans
+                .FirstOrDefaultAsync(t => t.MatKhau == mkcu && t.TrangThai);
+
+            if (taiKhoan == null)
+            {
+                return NotFound(new { success = false,Message = "Khong tim thay ID" });
+            }
+
+            if (ktraMK == null)
+            {
+                return NotFound(new { success = false, Message = "mk cu khong khop" });
+            }
+            taiKhoan.MatKhau = obj.MatKhau;
+            dbc.SaveChanges();
+            return Ok(new { success = true, message = $"Doi mat khau thanh cong!" });
+        }
         //------------------- hoa Don ------------------------//
-        
+
         [HttpGet]
         [Route("/hoaDon/locTheotrangthai/{trangthai}")]
         public ActionResult loctheotrangthai(int trangthai)
@@ -118,11 +216,43 @@ namespace QLyLapTop.Controllers
 
         [HttpGet]
         [Route("/hoaDon/danhSach")]
-        public IActionResult danhSachHoaDon()
+        public async Task<IActionResult> danhSachHoaDon()
         {
-            var danhsach = dbc.HoaDons.ToList();
-            return Ok(new { success = true, data = danhsach });
+            try
+            {
+                var hoaDons = await dbc.HoaDons
+                    .Join(
+                        dbc.KhachHangs,
+                        hd => hd.MaKhachHang,
+                        kh => kh.MaKhachHang,
+                        (hd, kh) => new
+                        {
+                            hd.MaDonHang,
+                            NgayDatHang = hd.NgayDatHang.HasValue
+                        ? hd.NgayDatHang.Value.ToString("yyyy-MM-dd") // Chỉ lấy ngày, tháng, năm
+                        : null,
+                            hd.PhiVanChuyen,
+                            hd.TrangThai,
+                            hd.TongTien,
+                            TenKhachHang = kh.TenKhachHang,
+                            soDienThoai = kh.SoDienThoai
+                        }
+                    )
+                    .ToListAsync();
+
+                if (!hoaDons.Any())
+                {
+                    return NotFound(new { message = "Không tìm thấy hóa đơn." });
+                }
+
+                return Ok(new { success = true, data = hoaDons });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = ex.Message });
+            }
         }
+
 
         [HttpPut]
         [Route("/hoaDon/huyDon/{id}")]
@@ -140,49 +270,176 @@ namespace QLyLapTop.Controllers
             return Ok(new { success = true, message = "huy don thanh cong!" });
         }
 
-        /* [HttpPost]
-         [Route("/todo")]
-         public ActionResult themHoaDon(HoaDon obj)
-         {
-             // Gán giá trị cho các trường thời gian khi tạo mới
-             obj.CreatedAt = DateTime.Now;
-             obj.UpdatedAt = DateTime.Now;
-             obj.DeletedAt = null;
+        //------------------- Chi tiet don hang ------------------------//
 
-             dbc.Tasks.Add(obj);
-             dbc.SaveChanges();
+        [HttpGet]
+        [Route("/chiTietHoaDon/danhSach/{maHoaDon}")]
+        public async Task<IActionResult> GetChiTietHoaDonWithTenSanPham(int maHoaDon)
+        {
+            try
+            {
+                var hoadon = dbc.ChiTietHoaDons
+                .Where(sp => sp.MaHoaDon == maHoaDon).ToList();
+                var chiTietHoaDons = await dbc.ChiTietHoaDons
+                    .Join(
+                        dbc.SanPhams,
+                        cthd => cthd.MaSanPham,
+                        sp => sp.MaSanPham,
+                        (cthd, sp) => new
+                        {
+                            cthd.MaHoaDon,
+                            cthd.MaSanPham,
+                            sp.TenSanPham,
+                            sp.GiaXuat,
+                            cthd.SoLuong,
+                            cthd.GiaBan,
+                            cthd.GiamGia,
+                            cthd.ThanhTien
+                        }
+                    )
+                    .ToListAsync();
 
-             return Ok(new { success = true, message = "Create new task successfully!" });
-         }*/
+                if (!chiTietHoaDons.Any())
+                {
+                    return NotFound(new { message = "Không tìm thấy chi tiết hóa đơn." });
+                }
+
+                return Ok(chiTietHoaDons);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = ex.Message });
+            }
+        }
+
+        [HttpPut]
+        [Route("/chiTietHoaDon/Sua/soLuong")]
+        public async Task<IActionResult> UpdateSoLuong(int maHoaDon, int maSanPham, int soLuongMoi)
+        {
+            if (soLuongMoi <= 0)
+            {
+                return BadRequest(new { message = "Số lượng phải lớn hơn 0." });
+            }
+
+            try
+            {
+                var chiTietHoaDon = await dbc.ChiTietHoaDons
+                    .FirstOrDefaultAsync(cthd => cthd.MaHoaDon == maHoaDon && cthd.MaSanPham == maSanPham);
+
+                if (chiTietHoaDon == null)
+                {
+                    return NotFound(new { message = "Chi tiết hóa đơn không tồn tại." });
+                }
+
+                // Cập nhật số lượng và tính lại thành tiền nếu cần
+                chiTietHoaDon.SoLuong = soLuongMoi;
+
+                await dbc.SaveChangesAsync();
+
+                return Ok(new { message = "Cập nhật số lượng thành công."});
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = ex.Message });
+            }
+        }
+
 
         //------------------- gio hang ------------------------//
 
         [HttpGet]
-        [Route("/gioHang/danhSach/{id}")]
-        public IActionResult danhSachgioHang(int id)
+        [Route("/gioHang/danhSach/{maKhachHang}")]
+        public async Task<ActionResult<IEnumerable<GioHang>>> GetGioHangByMaKhachHang(int maKhachHang)
         {
-            var danhsach = dbc.HoaDons.Where(gh => gh.MaKhachHang == id).ToList();
-            if (danhsach == null)
+            var gioHangs = await dbc.GioHangs
+                .Where(g => g.MaKhachHang == maKhachHang)
+                .ToListAsync();
+
+            if (gioHangs == null || gioHangs.Count == 0)
             {
-                return NotFound(new { success = false, message = $"khong tim thay gio hang voi ID: {id}!" });
+                return NotFound(); // Trả về 404 nếu không tìm thấy dữ liệu
             }
-            return Ok(new { success = true, data = danhsach });
+
+            return Ok(gioHangs); // Trả về dữ liệu nếu tìm thấy
         }
 
         [HttpPost]
         [Route("/gioHang/Them")]
-        public ActionResult ThemVaoGioHang(GioHang obj)
+        public IActionResult ThemVaoGioHang(GioHang obj)
         {
-         // Gán giá trị cho các trường thời gian khi tạo mới
-            obj.TrangThai = 1;
+            try
+            {
+                // Kiểm tra xem khách hàng và sản phẩm có tồn tại trong giỏ hàng hay chưa
+                var existingItem = dbc.GioHangs
+                    .FirstOrDefault(g => g.MaKhachHang == obj.MaKhachHang && g.MaSanPham == obj.MaSanPham);
 
-            dbc.GioHangs.Add(obj);
-            dbc.SaveChanges();
+                if (existingItem != null)
+                {
+                    return NotFound(new { success = false, message = $"San pham da co trong cua hang!" });
+                }
+                else
+                {
+                    // Nếu sản phẩm chưa có trong giỏ hàng, thêm mới vào giỏ hàng
+                    obj.TrangThai = 1; // Gán trạng thái cho giỏ hàng (ví dụ: 1 = Đang xử lý)
+                    dbc.GioHangs.Add(obj);
 
-            return Ok(new { success = true, message = "Thêm vào giỏ hàng thành công!" });
+                    // Lưu thay đổi vào cơ sở dữ liệu
+                    dbc.SaveChanges();
+
+                    return Ok(new { success = true, message = "Thêm vào giỏ hàng thành công!" });
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log error details (optional)
+                Console.WriteLine($"Error: {ex.Message}");
+                if (ex.InnerException != null)
+                {
+                    Console.WriteLine($"Inner exception: {ex.InnerException.Message}");
+                }
+                return StatusCode(500, "Có lỗi xảy ra khi lưu thay đổi. Vui lòng kiểm tra lại dữ liệu.");
+            }
         }
 
-         
+
+        [HttpPut]
+        [Route("/gioHang/suaSoLuong/{maKhachHang} & {maSP}")]
+        public async Task<ActionResult<IEnumerable<GioHang>>> suaSoLuong(int maKhachHang, int maSP, GioHang obj)
+        {
+            var gioHang = await dbc.GioHangs
+                .FirstOrDefaultAsync(g => g.MaKhachHang == maKhachHang && g.MaSanPham == maSP);
+
+
+            if (gioHang == null)
+            {
+                return NotFound(new { success = false, message = $"khong tim thay san pham voi ID: {maSP}!" }); // Trả về 404 nếu không tìm thấy dữ liệu
+            }
+
+            gioHang.SoLuong = obj.SoLuong;
+            gioHang.ThanhTien = obj.ThanhTien;
+            dbc.SaveChanges();
+
+            return Ok(new { success = true, message = "sua so luong thanh cong!" });
+        }
+
+        [HttpPut]
+        [Route("/gioHang/Xoa/{maKhachHang} & {maSP}")]
+        public async Task<ActionResult<IEnumerable<GioHang>>> XoaKhoiGioHang(int maKhachHang, int maSP)
+        {
+            var gioHang = await dbc.GioHangs
+                .FirstOrDefaultAsync(g => g.MaKhachHang == maKhachHang && g.MaSanPham == maSP);
+
+
+            if (gioHang == null)
+            {
+                return NotFound(new { success = false, message = $"khong tim thay san pham voi ID: {maSP}!" }); // Trả về 404 nếu không tìm thấy dữ liệu
+            }
+
+            gioHang.TrangThai = 0;
+            dbc.SaveChanges();
+
+            return Ok(new { success = true, message = "sua so luong thanh cong!" });
+        }
     }
 }
 

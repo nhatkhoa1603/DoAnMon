@@ -10,11 +10,9 @@ namespace QLyLapTop.MyModels;
 public partial class GioHang
 {
     [Key]
-    public int MaGioHang { get; set; }
-
-    public int MaSanPham { get; set; }
-
     public int MaKhachHang { get; set; }
+    [Key]
+    public int MaSanPham { get; set; }
 
     public int SoLuong { get; set; }
 

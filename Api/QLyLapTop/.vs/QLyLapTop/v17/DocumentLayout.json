@@ -1,77 +1,77 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\DaNenTang\\api\\QLyLapTop\\",
+  "WorkspaceRootPath": "C:\\DaNenTang\\doanmonhoc\\Api\\QLyLapTop\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{57E333CC-34C0-4BFF-83B4-B4654017020E}|QLyLapTop\\QLyLapTop.csproj|c:\\danentang\\api\\qlylaptop\\qlylaptop\\controllers\\qlylaptop.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{57E333CC-34C0-4BFF-83B4-B4654017020E}|QLyLapTop\\QLyLapTop.csproj|c:\\danentang\\doanmonhoc\\api\\qlylaptop\\qlylaptop\\controllers\\qlylaptop.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{57E333CC-34C0-4BFF-83B4-B4654017020E}|QLyLapTop\\QLyLapTop.csproj|solutionrelative:qlylaptop\\controllers\\qlylaptop.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{57E333CC-34C0-4BFF-83B4-B4654017020E}|QLyLapTop\\QLyLapTop.csproj|c:\\danentang\\api\\qlylaptop\\qlylaptop\\mymodels\\hoadon.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{57E333CC-34C0-4BFF-83B4-B4654017020E}|QLyLapTop\\QLyLapTop.csproj|solutionrelative:qlylaptop\\mymodels\\hoadon.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{57E333CC-34C0-4BFF-83B4-B4654017020E}|QLyLapTop\\QLyLapTop.csproj|c:\\danentang\\api\\qlylaptop\\qlylaptop\\mymodels\\ketnoicsdl.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{57E333CC-34C0-4BFF-83B4-B4654017020E}|QLyLapTop\\QLyLapTop.csproj|solutionrelative:qlylaptop\\mymodels\\ketnoicsdl.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{57E333CC-34C0-4BFF-83B4-B4654017020E}|QLyLapTop\\QLyLapTop.csproj|c:\\danentang\\api\\qlylaptop\\qlylaptop\\mymodels\\sanpham.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{57E333CC-34C0-4BFF-83B4-B4654017020E}|QLyLapTop\\QLyLapTop.csproj|solutionrelative:qlylaptop\\mymodels\\sanpham.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{57E333CC-34C0-4BFF-83B4-B4654017020E}|QLyLapTop\\QLyLapTop.csproj|c:\\danentang\\api\\qlylaptop\\qlylaptop\\mymodels\\giohang.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{57E333CC-34C0-4BFF-83B4-B4654017020E}|QLyLapTop\\QLyLapTop.csproj|solutionrelative:qlylaptop\\mymodels\\giohang.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{57E333CC-34C0-4BFF-83B4-B4654017020E}|QLyLapTop\\QLyLapTop.csproj|c:\\danentang\\api\\qlylaptop\\qlylaptop\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{57E333CC-34C0-4BFF-83B4-B4654017020E}|QLyLapTop\\QLyLapTop.csproj|solutionrelative:qlylaptop\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{57E333CC-34C0-4BFF-83B4-B4654017020E}|QLyLapTop\\QLyLapTop.csproj|c:\\danentang\\api\\qlylaptop\\qlylaptop\\mymodels\\chitiethoadon.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{57E333CC-34C0-4BFF-83B4-B4654017020E}|QLyLapTop\\QLyLapTop.csproj|c:\\danentang\\doanmonhoc\\api\\qlylaptop\\qlylaptop\\mymodels\\chitiethoadon.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{57E333CC-34C0-4BFF-83B4-B4654017020E}|QLyLapTop\\QLyLapTop.csproj|solutionrelative:qlylaptop\\mymodels\\chitiethoadon.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{57E333CC-34C0-4BFF-83B4-B4654017020E}|QLyLapTop\\QLyLapTop.csproj|c:\\danentang\\api\\qlylaptop\\qlylaptop\\mymodels\\danhgiasanpham.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{57E333CC-34C0-4BFF-83B4-B4654017020E}|QLyLapTop\\QLyLapTop.csproj|solutionrelative:qlylaptop\\mymodels\\danhgiasanpham.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{57E333CC-34C0-4BFF-83B4-B4654017020E}|QLyLapTop\\QLyLapTop.csproj|c:\\danentang\\doanmonhoc\\api\\qlylaptop\\qlylaptop\\mymodels\\sanpham.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{57E333CC-34C0-4BFF-83B4-B4654017020E}|QLyLapTop\\QLyLapTop.csproj|solutionrelative:qlylaptop\\mymodels\\sanpham.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{57E333CC-34C0-4BFF-83B4-B4654017020E}|QLyLapTop\\QLyLapTop.csproj|c:\\danentang\\api\\qlylaptop\\qlylaptop\\mymodels\\thuonghieu.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{57E333CC-34C0-4BFF-83B4-B4654017020E}|QLyLapTop\\QLyLapTop.csproj|solutionrelative:qlylaptop\\mymodels\\thuonghieu.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{57E333CC-34C0-4BFF-83B4-B4654017020E}|QLyLapTop\\QLyLapTop.csproj|c:\\danentang\\api\\qlylaptop\\qlylaptop\\mymodels\\trangthaigiaohang.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{57E333CC-34C0-4BFF-83B4-B4654017020E}|QLyLapTop\\QLyLapTop.csproj|solutionrelative:qlylaptop\\mymodels\\trangthaigiaohang.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{57E333CC-34C0-4BFF-83B4-B4654017020E}|QLyLapTop\\QLyLapTop.csproj|c:\\danentang\\api\\qlylaptop\\qlylaptop\\mymodels\\thongtinthanhtoan.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{57E333CC-34C0-4BFF-83B4-B4654017020E}|QLyLapTop\\QLyLapTop.csproj|solutionrelative:qlylaptop\\mymodels\\thongtinthanhtoan.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{57E333CC-34C0-4BFF-83B4-B4654017020E}|QLyLapTop\\QLyLapTop.csproj|c:\\danentang\\api\\qlylaptop\\qlylaptop\\mymodels\\taikhoan.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{57E333CC-34C0-4BFF-83B4-B4654017020E}|QLyLapTop\\QLyLapTop.csproj|solutionrelative:qlylaptop\\mymodels\\taikhoan.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{57E333CC-34C0-4BFF-83B4-B4654017020E}|QLyLapTop\\QLyLapTop.csproj|c:\\danentang\\api\\qlylaptop\\qlylaptop\\mymodels\\khuyenmai.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{57E333CC-34C0-4BFF-83B4-B4654017020E}|QLyLapTop\\QLyLapTop.csproj|solutionrelative:qlylaptop\\mymodels\\khuyenmai.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{57E333CC-34C0-4BFF-83B4-B4654017020E}|QLyLapTop\\QLyLapTop.csproj|c:\\danentang\\api\\qlylaptop\\qlylaptop\\mymodels\\khachhang.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{57E333CC-34C0-4BFF-83B4-B4654017020E}|QLyLapTop\\QLyLapTop.csproj|c:\\danentang\\doanmonhoc\\api\\qlylaptop\\qlylaptop\\mymodels\\khachhang.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{57E333CC-34C0-4BFF-83B4-B4654017020E}|QLyLapTop\\QLyLapTop.csproj|solutionrelative:qlylaptop\\mymodels\\khachhang.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{57E333CC-34C0-4BFF-83B4-B4654017020E}|QLyLapTop\\QLyLapTop.csproj|c:\\danentang\\api\\qlylaptop\\qlylaptop\\mymodels\\hinhthucthanhtoan.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{57E333CC-34C0-4BFF-83B4-B4654017020E}|QLyLapTop\\QLyLapTop.csproj|c:\\danentang\\doanmonhoc\\api\\qlylaptop\\qlylaptop\\mymodels\\hoadon.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{57E333CC-34C0-4BFF-83B4-B4654017020E}|QLyLapTop\\QLyLapTop.csproj|solutionrelative:qlylaptop\\mymodels\\hoadon.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{57E333CC-34C0-4BFF-83B4-B4654017020E}|QLyLapTop\\QLyLapTop.csproj|c:\\danentang\\doanmonhoc\\api\\qlylaptop\\qlylaptop\\mymodels\\thongtinthanhtoan.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{57E333CC-34C0-4BFF-83B4-B4654017020E}|QLyLapTop\\QLyLapTop.csproj|solutionrelative:qlylaptop\\mymodels\\thongtinthanhtoan.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{57E333CC-34C0-4BFF-83B4-B4654017020E}|QLyLapTop\\QLyLapTop.csproj|c:\\danentang\\doanmonhoc\\api\\qlylaptop\\qlylaptop\\mymodels\\ketnoicsdl.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{57E333CC-34C0-4BFF-83B4-B4654017020E}|QLyLapTop\\QLyLapTop.csproj|solutionrelative:qlylaptop\\mymodels\\ketnoicsdl.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{57E333CC-34C0-4BFF-83B4-B4654017020E}|QLyLapTop\\QLyLapTop.csproj|c:\\danentang\\doanmonhoc\\api\\qlylaptop\\qlylaptop\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{57E333CC-34C0-4BFF-83B4-B4654017020E}|QLyLapTop\\QLyLapTop.csproj|solutionrelative:qlylaptop\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{57E333CC-34C0-4BFF-83B4-B4654017020E}|QLyLapTop\\QLyLapTop.csproj|c:\\danentang\\doanmonhoc\\api\\qlylaptop\\qlylaptop\\mymodels\\giohang.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{57E333CC-34C0-4BFF-83B4-B4654017020E}|QLyLapTop\\QLyLapTop.csproj|solutionrelative:qlylaptop\\mymodels\\giohang.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{57E333CC-34C0-4BFF-83B4-B4654017020E}|QLyLapTop\\QLyLapTop.csproj|c:\\danentang\\doanmonhoc\\api\\qlylaptop\\qlylaptop\\mymodels\\hinhthucthanhtoan.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{57E333CC-34C0-4BFF-83B4-B4654017020E}|QLyLapTop\\QLyLapTop.csproj|solutionrelative:qlylaptop\\mymodels\\hinhthucthanhtoan.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{57E333CC-34C0-4BFF-83B4-B4654017020E}|QLyLapTop\\QLyLapTop.csproj|c:\\danentang\\api\\qlylaptop\\qlylaptop\\mymodels\\diachigiaohang.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{57E333CC-34C0-4BFF-83B4-B4654017020E}|QLyLapTop\\QLyLapTop.csproj|c:\\danentang\\doanmonhoc\\api\\qlylaptop\\qlylaptop\\mymodels\\danhgiasanpham.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{57E333CC-34C0-4BFF-83B4-B4654017020E}|QLyLapTop\\QLyLapTop.csproj|solutionrelative:qlylaptop\\mymodels\\danhgiasanpham.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{57E333CC-34C0-4BFF-83B4-B4654017020E}|QLyLapTop\\QLyLapTop.csproj|c:\\danentang\\doanmonhoc\\api\\qlylaptop\\qlylaptop\\mymodels\\thuonghieu.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{57E333CC-34C0-4BFF-83B4-B4654017020E}|QLyLapTop\\QLyLapTop.csproj|solutionrelative:qlylaptop\\mymodels\\thuonghieu.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{57E333CC-34C0-4BFF-83B4-B4654017020E}|QLyLapTop\\QLyLapTop.csproj|c:\\danentang\\doanmonhoc\\api\\qlylaptop\\qlylaptop\\mymodels\\trangthaigiaohang.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{57E333CC-34C0-4BFF-83B4-B4654017020E}|QLyLapTop\\QLyLapTop.csproj|solutionrelative:qlylaptop\\mymodels\\trangthaigiaohang.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{57E333CC-34C0-4BFF-83B4-B4654017020E}|QLyLapTop\\QLyLapTop.csproj|c:\\danentang\\doanmonhoc\\api\\qlylaptop\\qlylaptop\\mymodels\\taikhoan.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{57E333CC-34C0-4BFF-83B4-B4654017020E}|QLyLapTop\\QLyLapTop.csproj|solutionrelative:qlylaptop\\mymodels\\taikhoan.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{57E333CC-34C0-4BFF-83B4-B4654017020E}|QLyLapTop\\QLyLapTop.csproj|c:\\danentang\\doanmonhoc\\api\\qlylaptop\\qlylaptop\\mymodels\\khuyenmai.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{57E333CC-34C0-4BFF-83B4-B4654017020E}|QLyLapTop\\QLyLapTop.csproj|solutionrelative:qlylaptop\\mymodels\\khuyenmai.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{57E333CC-34C0-4BFF-83B4-B4654017020E}|QLyLapTop\\QLyLapTop.csproj|c:\\danentang\\doanmonhoc\\api\\qlylaptop\\qlylaptop\\mymodels\\diachigiaohang.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{57E333CC-34C0-4BFF-83B4-B4654017020E}|QLyLapTop\\QLyLapTop.csproj|solutionrelative:qlylaptop\\mymodels\\diachigiaohang.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{57E333CC-34C0-4BFF-83B4-B4654017020E}|QLyLapTop\\QLyLapTop.csproj|c:\\danentang\\api\\qlylaptop\\qlylaptop\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "AbsoluteMoniker": "D:0:0:{57E333CC-34C0-4BFF-83B4-B4654017020E}|QLyLapTop\\QLyLapTop.csproj|c:\\danentang\\doanmonhoc\\api\\qlylaptop\\qlylaptop\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
       "RelativeMoniker": "D:0:0:{57E333CC-34C0-4BFF-83B4-B4654017020E}|QLyLapTop\\QLyLapTop.csproj|solutionrelative:qlylaptop\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{57E333CC-34C0-4BFF-83B4-B4654017020E}|QLyLapTop\\QLyLapTop.csproj|c:\\danentang\\api\\qlylaptop\\qlylaptop\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "AbsoluteMoniker": "D:0:0:{57E333CC-34C0-4BFF-83B4-B4654017020E}|QLyLapTop\\QLyLapTop.csproj|c:\\danentang\\doanmonhoc\\api\\qlylaptop\\qlylaptop\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
       "RelativeMoniker": "D:0:0:{57E333CC-34C0-4BFF-83B4-B4654017020E}|QLyLapTop\\QLyLapTop.csproj|solutionrelative:qlylaptop\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     }
   ],
@@ -82,28 +82,40 @@
       "DocumentGroups": [
         {
           "DockedHeight": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 1,
           "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "GioHang.cs",
+              "DocumentMoniker": "C:\\DaNenTang\\doanmonhoc\\Api\\QLyLapTop\\QLyLapTop\\MyModels\\GioHang.cs",
+              "RelativeDocumentMoniker": "QLyLapTop\\MyModels\\GioHang.cs",
+              "ToolTip": "C:\\DaNenTang\\doanmonhoc\\Api\\QLyLapTop\\QLyLapTop\\MyModels\\GioHang.cs",
+              "RelativeToolTip": "QLyLapTop\\MyModels\\GioHang.cs",
+              "ViewState": "AQIAAAMAAAAAAAAAAAAAABMAAAAqAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-11T15:11:29.71Z"
+            },
             {
               "$type": "Document",
               "DocumentIndex": 0,
               "Title": "QLyLapTop.cs",
-              "DocumentMoniker": "C:\\DaNenTang\\api\\QLyLapTop\\QLyLapTop\\Controllers\\QLyLapTop.cs",
+              "DocumentMoniker": "C:\\DaNenTang\\doanmonhoc\\Api\\QLyLapTop\\QLyLapTop\\Controllers\\QLyLapTop.cs",
               "RelativeDocumentMoniker": "QLyLapTop\\Controllers\\QLyLapTop.cs",
-              "ToolTip": "C:\\DaNenTang\\api\\QLyLapTop\\QLyLapTop\\Controllers\\QLyLapTop.cs",
+              "ToolTip": "C:\\DaNenTang\\doanmonhoc\\Api\\QLyLapTop\\QLyLapTop\\Controllers\\QLyLapTop.cs",
               "RelativeToolTip": "QLyLapTop\\Controllers\\QLyLapTop.cs",
-              "ViewState": "AQIAAKcAAAAAAAAAAAAgwLgAAAAJAAAA",
+              "ViewState": "AQIAABQBAAAAAAAAAAAIwBsBAAAaAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-01-06T13:04:13.252Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 12,
               "Title": "TrangThaiGiaoHang.cs",
-              "DocumentMoniker": "C:\\DaNenTang\\api\\QLyLapTop\\QLyLapTop\\MyModels\\TrangThaiGiaoHang.cs",
+              "DocumentMoniker": "C:\\DaNenTang\\doanmonhoc\\Api\\QLyLapTop\\QLyLapTop\\MyModels\\TrangThaiGiaoHang.cs",
               "RelativeDocumentMoniker": "QLyLapTop\\MyModels\\TrangThaiGiaoHang.cs",
-              "ToolTip": "C:\\DaNenTang\\api\\QLyLapTop\\QLyLapTop\\MyModels\\TrangThaiGiaoHang.cs",
+              "ToolTip": "C:\\DaNenTang\\doanmonhoc\\Api\\QLyLapTop\\QLyLapTop\\MyModels\\TrangThaiGiaoHang.cs",
               "RelativeToolTip": "QLyLapTop\\MyModels\\TrangThaiGiaoHang.cs",
               "ViewState": "AQIAAAsAAAAAAAAAAAAAwBUAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -111,11 +123,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 11,
               "Title": "ThuongHieu.cs",
-              "DocumentMoniker": "C:\\DaNenTang\\api\\QLyLapTop\\QLyLapTop\\MyModels\\ThuongHieu.cs",
+              "DocumentMoniker": "C:\\DaNenTang\\doanmonhoc\\Api\\QLyLapTop\\QLyLapTop\\MyModels\\ThuongHieu.cs",
               "RelativeDocumentMoniker": "QLyLapTop\\MyModels\\ThuongHieu.cs",
-              "ToolTip": "C:\\DaNenTang\\api\\QLyLapTop\\QLyLapTop\\MyModels\\ThuongHieu.cs",
+              "ToolTip": "C:\\DaNenTang\\doanmonhoc\\Api\\QLyLapTop\\QLyLapTop\\MyModels\\ThuongHieu.cs",
               "RelativeToolTip": "QLyLapTop\\MyModels\\ThuongHieu.cs",
               "ViewState": "AQIAAAUAAAAAAAAAAAAmwBAAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -123,23 +135,23 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 10,
+              "DocumentIndex": 5,
               "Title": "ThongTinThanhToan.cs",
-              "DocumentMoniker": "C:\\DaNenTang\\api\\QLyLapTop\\QLyLapTop\\MyModels\\ThongTinThanhToan.cs",
+              "DocumentMoniker": "C:\\DaNenTang\\doanmonhoc\\Api\\QLyLapTop\\QLyLapTop\\MyModels\\ThongTinThanhToan.cs",
               "RelativeDocumentMoniker": "QLyLapTop\\MyModels\\ThongTinThanhToan.cs",
-              "ToolTip": "C:\\DaNenTang\\api\\QLyLapTop\\QLyLapTop\\MyModels\\ThongTinThanhToan.cs",
+              "ToolTip": "C:\\DaNenTang\\doanmonhoc\\Api\\QLyLapTop\\QLyLapTop\\MyModels\\ThongTinThanhToan.cs",
               "RelativeToolTip": "QLyLapTop\\MyModels\\ThongTinThanhToan.cs",
-              "ViewState": "AQIAAA8AAAAAAAAAAAAYwBwAAAAAAAAA",
+              "ViewState": "AQIAAA8AAAAAAAAAAAAYwBYAAAAnAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-01-09T07:15:20.09Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
+              "DocumentIndex": 13,
               "Title": "TaiKhoan.cs",
-              "DocumentMoniker": "C:\\DaNenTang\\api\\QLyLapTop\\QLyLapTop\\MyModels\\TaiKhoan.cs",
+              "DocumentMoniker": "C:\\DaNenTang\\doanmonhoc\\Api\\QLyLapTop\\QLyLapTop\\MyModels\\TaiKhoan.cs",
               "RelativeDocumentMoniker": "QLyLapTop\\MyModels\\TaiKhoan.cs",
-              "ToolTip": "C:\\DaNenTang\\api\\QLyLapTop\\QLyLapTop\\MyModels\\TaiKhoan.cs",
+              "ToolTip": "C:\\DaNenTang\\doanmonhoc\\Api\\QLyLapTop\\QLyLapTop\\MyModels\\TaiKhoan.cs",
               "RelativeToolTip": "QLyLapTop\\MyModels\\TaiKhoan.cs",
               "ViewState": "AQIAAAsAAAAAAAAAAAAAwBoAAAAnAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -147,36 +159,35 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 13,
+              "DocumentIndex": 3,
               "Title": "KhachHang.cs",
-              "DocumentMoniker": "C:\\DaNenTang\\api\\QLyLapTop\\QLyLapTop\\MyModels\\KhachHang.cs",
+              "DocumentMoniker": "C:\\DaNenTang\\doanmonhoc\\Api\\QLyLapTop\\QLyLapTop\\MyModels\\KhachHang.cs",
               "RelativeDocumentMoniker": "QLyLapTop\\MyModels\\KhachHang.cs",
-              "ToolTip": "C:\\DaNenTang\\api\\QLyLapTop\\QLyLapTop\\MyModels\\KhachHang.cs",
+              "ToolTip": "C:\\DaNenTang\\doanmonhoc\\Api\\QLyLapTop\\QLyLapTop\\MyModels\\KhachHang.cs",
               "RelativeToolTip": "QLyLapTop\\MyModels\\KhachHang.cs",
-              "ViewState": "AQIAACIAAAAAAAAAAAAwwCEAAAACAAAA",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAACIAAAABAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-01-09T07:14:55.004Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 4,
               "Title": "HoaDon.cs",
-              "DocumentMoniker": "C:\\DaNenTang\\api\\QLyLapTop\\QLyLapTop\\MyModels\\HoaDon.cs",
+              "DocumentMoniker": "C:\\DaNenTang\\doanmonhoc\\Api\\QLyLapTop\\QLyLapTop\\MyModels\\HoaDon.cs",
               "RelativeDocumentMoniker": "QLyLapTop\\MyModels\\HoaDon.cs",
-              "ToolTip": "C:\\DaNenTang\\api\\QLyLapTop\\QLyLapTop\\MyModels\\HoaDon.cs",
+              "ToolTip": "C:\\DaNenTang\\doanmonhoc\\Api\\QLyLapTop\\QLyLapTop\\MyModels\\HoaDon.cs",
               "RelativeToolTip": "QLyLapTop\\MyModels\\HoaDon.cs",
-              "ViewState": "AQIAAAsAAAAAAAAAAAAAwBsAAAAPAAAA",
+              "ViewState": "AQIAAAMAAAAAAAAAAAAAAB4AAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-01-09T07:14:36.505Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-01-09T07:14:36.505Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 14,
+              "DocumentIndex": 9,
               "Title": "HinhThucThanhToan.cs",
-              "DocumentMoniker": "C:\\DaNenTang\\api\\QLyLapTop\\QLyLapTop\\MyModels\\HinhThucThanhToan.cs",
+              "DocumentMoniker": "C:\\DaNenTang\\doanmonhoc\\Api\\QLyLapTop\\QLyLapTop\\MyModels\\HinhThucThanhToan.cs",
               "RelativeDocumentMoniker": "QLyLapTop\\MyModels\\HinhThucThanhToan.cs",
-              "ToolTip": "C:\\DaNenTang\\api\\QLyLapTop\\QLyLapTop\\MyModels\\HinhThucThanhToan.cs",
+              "ToolTip": "C:\\DaNenTang\\doanmonhoc\\Api\\QLyLapTop\\QLyLapTop\\MyModels\\HinhThucThanhToan.cs",
               "RelativeToolTip": "QLyLapTop\\MyModels\\HinhThucThanhToan.cs",
               "ViewState": "AQIAAAsAAAAAAAAAAAAAwBQAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -184,24 +195,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "GioHang.cs",
-              "DocumentMoniker": "C:\\DaNenTang\\api\\QLyLapTop\\QLyLapTop\\MyModels\\GioHang.cs",
-              "RelativeDocumentMoniker": "QLyLapTop\\MyModels\\GioHang.cs",
-              "ToolTip": "C:\\DaNenTang\\api\\QLyLapTop\\QLyLapTop\\MyModels\\GioHang.cs",
-              "RelativeToolTip": "QLyLapTop\\MyModels\\GioHang.cs",
-              "ViewState": "AQIAABMAAAAAAAAAAAAkwBgAAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-01-09T07:14:26.874Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
               "DocumentIndex": 15,
               "Title": "DiaChiGiaoHang.cs",
-              "DocumentMoniker": "C:\\DaNenTang\\api\\QLyLapTop\\QLyLapTop\\MyModels\\DiaChiGiaoHang.cs",
+              "DocumentMoniker": "C:\\DaNenTang\\doanmonhoc\\Api\\QLyLapTop\\QLyLapTop\\MyModels\\DiaChiGiaoHang.cs",
               "RelativeDocumentMoniker": "QLyLapTop\\MyModels\\DiaChiGiaoHang.cs",
-              "ToolTip": "C:\\DaNenTang\\api\\QLyLapTop\\QLyLapTop\\MyModels\\DiaChiGiaoHang.cs",
+              "ToolTip": "C:\\DaNenTang\\doanmonhoc\\Api\\QLyLapTop\\QLyLapTop\\MyModels\\DiaChiGiaoHang.cs",
               "RelativeToolTip": "QLyLapTop\\MyModels\\DiaChiGiaoHang.cs",
               "ViewState": "AQIAABwAAAAAAAAAAAAkwCkAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -209,11 +207,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 10,
               "Title": "DanhGiaSanPham.cs",
-              "DocumentMoniker": "C:\\DaNenTang\\api\\QLyLapTop\\QLyLapTop\\MyModels\\DanhGiaSanPham.cs",
+              "DocumentMoniker": "C:\\DaNenTang\\doanmonhoc\\Api\\QLyLapTop\\QLyLapTop\\MyModels\\DanhGiaSanPham.cs",
               "RelativeDocumentMoniker": "QLyLapTop\\MyModels\\DanhGiaSanPham.cs",
-              "ToolTip": "C:\\DaNenTang\\api\\QLyLapTop\\QLyLapTop\\MyModels\\DanhGiaSanPham.cs",
+              "ToolTip": "C:\\DaNenTang\\doanmonhoc\\Api\\QLyLapTop\\QLyLapTop\\MyModels\\DanhGiaSanPham.cs",
               "RelativeToolTip": "QLyLapTop\\MyModels\\DanhGiaSanPham.cs",
               "ViewState": "AQIAAAYAAAAAAAAAAAAAABkAAAAnAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -221,11 +219,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 12,
+              "DocumentIndex": 14,
               "Title": "KhuyenMai.cs",
-              "DocumentMoniker": "C:\\DaNenTang\\api\\QLyLapTop\\QLyLapTop\\MyModels\\KhuyenMai.cs",
+              "DocumentMoniker": "C:\\DaNenTang\\doanmonhoc\\Api\\QLyLapTop\\QLyLapTop\\MyModels\\KhuyenMai.cs",
               "RelativeDocumentMoniker": "QLyLapTop\\MyModels\\KhuyenMai.cs",
-              "ToolTip": "C:\\DaNenTang\\api\\QLyLapTop\\QLyLapTop\\MyModels\\KhuyenMai.cs",
+              "ToolTip": "C:\\DaNenTang\\doanmonhoc\\Api\\QLyLapTop\\QLyLapTop\\MyModels\\KhuyenMai.cs",
               "RelativeToolTip": "QLyLapTop\\MyModels\\KhuyenMai.cs",
               "ViewState": "AQIAABEAAAAAAAAAAAA3wBoAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -233,26 +231,25 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 2,
               "Title": "SanPham.cs",
-              "DocumentMoniker": "C:\\DaNenTang\\api\\QLyLapTop\\QLyLapTop\\MyModels\\SanPham.cs",
+              "DocumentMoniker": "C:\\DaNenTang\\doanmonhoc\\Api\\QLyLapTop\\QLyLapTop\\MyModels\\SanPham.cs",
               "RelativeDocumentMoniker": "QLyLapTop\\MyModels\\SanPham.cs",
-              "ToolTip": "C:\\DaNenTang\\api\\QLyLapTop\\QLyLapTop\\MyModels\\SanPham.cs",
+              "ToolTip": "C:\\DaNenTang\\doanmonhoc\\Api\\QLyLapTop\\QLyLapTop\\MyModels\\SanPham.cs",
               "RelativeToolTip": "QLyLapTop\\MyModels\\SanPham.cs",
-              "ViewState": "AQIAACMAAAAAAAAAAAAYwC8AAAADAAAA",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAC4AAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-01-09T06:14:50.029Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-01-09T06:14:50.029Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 1,
               "Title": "ChiTietHoaDon.cs",
-              "DocumentMoniker": "C:\\DaNenTang\\api\\QLyLapTop\\QLyLapTop\\MyModels\\ChiTietHoaDon.cs",
+              "DocumentMoniker": "C:\\DaNenTang\\doanmonhoc\\Api\\QLyLapTop\\QLyLapTop\\MyModels\\ChiTietHoaDon.cs",
               "RelativeDocumentMoniker": "QLyLapTop\\MyModels\\ChiTietHoaDon.cs",
-              "ToolTip": "C:\\DaNenTang\\api\\QLyLapTop\\QLyLapTop\\MyModels\\ChiTietHoaDon.cs",
+              "ToolTip": "C:\\DaNenTang\\doanmonhoc\\Api\\QLyLapTop\\QLyLapTop\\MyModels\\ChiTietHoaDon.cs",
               "RelativeToolTip": "QLyLapTop\\MyModels\\ChiTietHoaDon.cs",
-              "ViewState": "AQIAAAkAAAAAAAAAAAAuwBwAAAAAAAAA",
+              "ViewState": "AQIAAAMAAAAAAAAAAAAuwB4AAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-01-07T03:39:02.527Z"
             },
@@ -260,9 +257,9 @@
               "$type": "Document",
               "DocumentIndex": 16,
               "Title": "launchSettings.json",
-              "DocumentMoniker": "C:\\DaNenTang\\api\\QLyLapTop\\QLyLapTop\\Properties\\launchSettings.json",
+              "DocumentMoniker": "C:\\DaNenTang\\doanmonhoc\\Api\\QLyLapTop\\QLyLapTop\\Properties\\launchSettings.json",
               "RelativeDocumentMoniker": "QLyLapTop\\Properties\\launchSettings.json",
-              "ToolTip": "C:\\DaNenTang\\api\\QLyLapTop\\QLyLapTop\\Properties\\launchSettings.json",
+              "ToolTip": "C:\\DaNenTang\\doanmonhoc\\Api\\QLyLapTop\\QLyLapTop\\Properties\\launchSettings.json",
               "RelativeToolTip": "QLyLapTop\\Properties\\launchSettings.json",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
@@ -272,9 +269,9 @@
               "$type": "Document",
               "DocumentIndex": 17,
               "Title": "appsettings.json",
-              "DocumentMoniker": "C:\\DaNenTang\\api\\QLyLapTop\\QLyLapTop\\appsettings.json",
+              "DocumentMoniker": "C:\\DaNenTang\\doanmonhoc\\Api\\QLyLapTop\\QLyLapTop\\appsettings.json",
               "RelativeDocumentMoniker": "QLyLapTop\\appsettings.json",
-              "ToolTip": "C:\\DaNenTang\\api\\QLyLapTop\\QLyLapTop\\appsettings.json",
+              "ToolTip": "C:\\DaNenTang\\doanmonhoc\\Api\\QLyLapTop\\QLyLapTop\\appsettings.json",
               "RelativeToolTip": "QLyLapTop\\appsettings.json",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
@@ -282,29 +279,27 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 7,
               "Title": "Program.cs",
-              "DocumentMoniker": "C:\\DaNenTang\\api\\QLyLapTop\\QLyLapTop\\Program.cs",
+              "DocumentMoniker": "C:\\DaNenTang\\doanmonhoc\\Api\\QLyLapTop\\QLyLapTop\\Program.cs",
               "RelativeDocumentMoniker": "QLyLapTop\\Program.cs",
-              "ToolTip": "C:\\DaNenTang\\api\\QLyLapTop\\QLyLapTop\\Program.cs",
+              "ToolTip": "C:\\DaNenTang\\doanmonhoc\\Api\\QLyLapTop\\QLyLapTop\\Program.cs",
               "RelativeToolTip": "QLyLapTop\\Program.cs",
-              "ViewState": "AQIAAA4AAAAAAAAAAAAiwB0AAAAAAAAA",
+              "ViewState": "AQIAAA8AAAAAAAAAAAAAABsAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-01-06T13:01:10.438Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-01-06T13:01:10.438Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 6,
               "Title": "KetNoiCSDL.cs",
-              "DocumentMoniker": "C:\\DaNenTang\\api\\QLyLapTop\\QLyLapTop\\MyModels\\KetNoiCSDL.cs",
+              "DocumentMoniker": "C:\\DaNenTang\\doanmonhoc\\Api\\QLyLapTop\\QLyLapTop\\MyModels\\KetNoiCSDL.cs",
               "RelativeDocumentMoniker": "QLyLapTop\\MyModels\\KetNoiCSDL.cs",
-              "ToolTip": "C:\\DaNenTang\\api\\QLyLapTop\\QLyLapTop\\MyModels\\KetNoiCSDL.cs",
+              "ToolTip": "C:\\DaNenTang\\doanmonhoc\\Api\\QLyLapTop\\QLyLapTop\\MyModels\\KetNoiCSDL.cs",
               "RelativeToolTip": "QLyLapTop\\MyModels\\KetNoiCSDL.cs",
-              "ViewState": "AQIAABAAAAAAAAAAAADwvxsAAAAfAAAA",
+              "ViewState": "AQIAACEAAAAAAAAAAAA5wDEAAAA8AAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-01-06T12:59:54.923Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-01-06T12:59:54.923Z"
             }
           ]
         }

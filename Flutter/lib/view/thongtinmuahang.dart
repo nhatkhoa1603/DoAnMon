@@ -17,10 +17,21 @@ class _thong_tin_mua_hang extends State<thong_tin_mua_hang> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: Text('Điền thông tin mua hàng', style: TextStyle(color: Colors.white),),
-          centerTitle: true,
+          title: Text('Điền thông tin mua hàng',
+           style: TextStyle(color: const Color.fromARGB(255, 0, 0, 0)),
+           ),
+          //centerTitle: true,
           backgroundColor: Colors.blue,
+          
+           leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () {
+              // Quay lại màn hình giỏ hàng
+              Navigator.pop(context);
+            },
+          ),
         ),
+        
         body: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(16.0),

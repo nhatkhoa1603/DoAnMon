@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "ZuF5FUB1TVFeyWQ60/iiEWcl+gjHUPCBr9IP+RYPPVhN8vn1NqS0MAJ9LvP5Yjr3w3b6Kd7/rFIlx0tPYGOGuA==",
+  "dgSpecHash": "krhx0mVGjeupogZKxmEtStsw9j25VM1gbvfDXpDFbbHc4j5BqoXqCXROUn5zR3bhJqFmabaigAoWU3nJxOvKBA==",
   "success": true,
-  "projectFilePath": "C:\\DaNenTang\\api\\qlyLapTop\\QLyLapTop\\QLyLapTop.csproj",
+  "projectFilePath": "C:\\DaNenTang\\doanmonhoc\\Api\\QLyLapTop\\QLyLapTop\\QLyLapTop.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\nhatk\\.nuget\\packages\\azure.core\\1.25.0\\azure.core.1.25.0.nupkg.sha512",
     "C:\\Users\\nhatk\\.nuget\\packages\\azure.identity\\1.7.0\\azure.identity.1.7.0.nupkg.sha512",
@@ -48,6 +48,7 @@
     "C:\\Users\\nhatk\\.nuget\\packages\\microsoft.sqlserver.server\\1.0.0\\microsoft.sqlserver.server.1.0.0.nupkg.sha512",
     "C:\\Users\\nhatk\\.nuget\\packages\\microsoft.win32.systemevents\\6.0.0\\microsoft.win32.systemevents.6.0.0.nupkg.sha512",
     "C:\\Users\\nhatk\\.nuget\\packages\\mono.texttemplating\\2.2.1\\mono.texttemplating.2.2.1.nupkg.sha512",
+    "C:\\Users\\nhatk\\.nuget\\packages\\portable.bouncycastle\\1.9.0\\portable.bouncycastle.1.9.0.nupkg.sha512",
     "C:\\Users\\nhatk\\.nuget\\packages\\swashbuckle.aspnetcore\\6.4.0\\swashbuckle.aspnetcore.6.4.0.nupkg.sha512",
     "C:\\Users\\nhatk\\.nuget\\packages\\swashbuckle.aspnetcore.swagger\\6.4.0\\swashbuckle.aspnetcore.swagger.6.4.0.nupkg.sha512",
     "C:\\Users\\nhatk\\.nuget\\packages\\swashbuckle.aspnetcore.swaggergen\\6.4.0\\swashbuckle.aspnetcore.swaggergen.6.4.0.nupkg.sha512",

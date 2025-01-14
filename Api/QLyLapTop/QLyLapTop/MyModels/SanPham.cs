@@ -29,9 +29,6 @@ public partial class SanPham
     public int? SoLuongTonKho { get; set; }
 
     [StringLength(255)]
-    public string? KhuVucKho { get; set; }
-
-    [StringLength(255)]
     public string? HinhAnh { get; set; }
 
     [StringLength(255)]

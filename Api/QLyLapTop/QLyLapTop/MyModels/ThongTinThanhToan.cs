@@ -21,10 +21,6 @@ public partial class ThongTinThanhToan
 
     [Column(TypeName = "decimal(10, 2)")]
     public decimal SoTien { get; set; }
-
-    [StringLength(100)]
-    public string? MaGiaoDich { get; set; }
-
     public int TrangThai { get; set; }
 
 }

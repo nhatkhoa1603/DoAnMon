@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\DaNenTang\\api\\qlyLapTop\\QLyLapTop\\QLyLapTop.csproj": {}
+    "C:\\DaNenTang\\doanmonhoc\\Api\\QLyLapTop\\QLyLapTop\\QLyLapTop.csproj": {}
   },
   "projects": {
-    "C:\\DaNenTang\\api\\qlyLapTop\\QLyLapTop\\QLyLapTop.csproj": {
+    "C:\\DaNenTang\\doanmonhoc\\Api\\QLyLapTop\\QLyLapTop\\QLyLapTop.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\DaNenTang\\api\\qlyLapTop\\QLyLapTop\\QLyLapTop.csproj",
+        "projectUniqueName": "C:\\DaNenTang\\doanmonhoc\\Api\\QLyLapTop\\QLyLapTop\\QLyLapTop.csproj",
         "projectName": "QLyLapTop",
-        "projectPath": "C:\\DaNenTang\\api\\qlyLapTop\\QLyLapTop\\QLyLapTop.csproj",
+        "projectPath": "C:\\DaNenTang\\doanmonhoc\\Api\\QLyLapTop\\QLyLapTop\\QLyLapTop.csproj",
         "packagesPath": "C:\\Users\\nhatk\\.nuget\\packages\\",
-        "outputPath": "C:\\DaNenTang\\api\\qlyLapTop\\QLyLapTop\\obj\\",
+        "outputPath": "C:\\DaNenTang\\doanmonhoc\\Api\\QLyLapTop\\QLyLapTop\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\nhatk\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -64,6 +64,10 @@
               "suppressParent": "All",
               "target": "Package",
               "version": "[8.0.0, )"
+            },
+            "Portable.BouncyCastle": {
+              "target": "Package",
+              "version": "[1.9.0, )"
             },
             "Swashbuckle.AspNetCore": {
               "target": "Package",

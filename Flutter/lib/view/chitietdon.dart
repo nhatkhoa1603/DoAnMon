@@ -152,7 +152,14 @@ class _chitietdonState extends State<chitietdon> {
                     children: [
                       Row(
                         children: [
-                          Icon(Icons.access_time, color: Colors.orange),
+                          Icon(Icons.access_time,
+                              color: hoaDon.trangThai == 3
+                                  ? Colors.greenAccent
+                                  : hoaDon.trangThai == 0
+                                      ? Colors.red
+                                      : hoaDon.trangThai == 2
+                                          ? Colors.lightBlue
+                                          : Colors.orange),
                           SizedBox(width: 8),
                           Text(
                               '${hoaDon.trangThai == 3 ? "Hoàn thành" : hoaDon.trangThai == 0 ? "Đã hủy" : hoaDon.trangThai == 2 ? "Đang giao" : "Chờ xác nhận"}',
@@ -182,58 +189,60 @@ class _chitietdonState extends State<chitietdon> {
               TotalPriceCard(orderItems: chiTietdons),
               Divider(),
 
-              // Các nút hành động
+              // Các nút hành độngs
               SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: Text("Xác nhận"),
-                        content: Text(
-                            "Bạn có chắc chắn muốn cập nhật thông tin sản phẩm không?"),
-                        actions: [
-                          TextButton(
-                            onPressed: () {
-                              Navigator.of(context).pop(); // Đóng dialog
-                            },
-                            child: Text("Hủy"),
-                          ),
-                          ElevatedButton(
-                            onPressed: () async {
-                              Navigator.of(context).pop(); // Đóng dialog
-                              // Thực hiện cập nhật thông tin
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                      "Thông tin sản phẩm đã được cập nhật!"),
-                                  backgroundColor: Colors.green,
+              hoaDon.trangThai == 1
+                  ? ElevatedButton(
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: Text("Xác nhận"),
+                              content: Text(
+                                  "Bạn có chắc chắn muốn cập nhật thông tin sản phẩm không?"),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop(); // Đóng dialog
+                                  },
+                                  child: Text("Hủy"),
                                 ),
-                              );
-                              for (var item in chiTietdons) {
-                                await capNhatSoLuong(
-                                  context,
-                                  hoaDon.maHoaDon,
-                                  item.maSanPham,
-                                  item.soLuong,
-                                );
-                              }
-                              Navigator.of(context).pop();
-                            },
-                            child: Text("Xác nhận"),
-                          ),
-                        ],
-                      );
-                    },
-                  );
-                },
-                child: Text(
-                  "Cập nhật lại thông tin sản phẩm",
-                  style: TextStyle(color: Colors.white),
-                ),
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
-              ),
+                                ElevatedButton(
+                                  onPressed: () async {
+                                    Navigator.of(context).pop(); // Đóng dialog
+                                    // Thực hiện cập nhật thông tin
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                            "Thông tin sản phẩm đã được cập nhật!"),
+                                        backgroundColor: Colors.green,
+                                      ),
+                                    );
+                                    for (var item in chiTietdons) {
+                                      await capNhatSoLuong(
+                                        context,
+                                        hoaDon.maHoaDon,
+                                        item.maSanPham,
+                                        item.soLuong,
+                                      );
+                                    }
+                                  },
+                                  child: Text("Xác nhận"),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      },
+                      child: Text(
+                        "Cập nhật lại thông tin sản phẩm",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue),
+                    )
+                  : SizedBox.shrink(),
             ],
           ),
         ),

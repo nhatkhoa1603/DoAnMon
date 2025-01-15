@@ -34,6 +34,43 @@ class _QuanLyDonHangState extends State<QuanLyDonHang> {
     }
   }
 
+  Future<void> duyetDon(BuildContext context, int maHoaDon) async {
+    final reponse = await http.put(
+      Uri.parse('https://10.0.2.2:7042/hoaDon/capNhat/$maHoaDon'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+    if (reponse.statusCode == 200) {
+      final data = json.decode(reponse.body);
+      if (data['success']) {
+        Navigator.pop(context, true);
+      } else {
+        thongBaoLoi(context, data['message']);
+      }
+    } else {
+      thongBaoLoi(context, "Lỗi khi cập nhật thông tin");
+    }
+  }
+
+  void thongBaoLoi(BuildContext context, String mess) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text("Lỗi"),
+            content: Text(mess),
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text("OK"))
+            ],
+          );
+        });
+  }
+
   int selectedFilter = -1;
 
   @override
@@ -139,13 +176,15 @@ class _QuanLyDonHangState extends State<QuanLyDonHang> {
                                 Text(
                                     'Khách hàng: ${hoaDons[index].tenKhachHang}'),
                                 Text(
-                                  'Trạng thái: ${hoaDons[index].trangThai == 2 ? "Hoàn thành" : hoaDons[index].trangThai == 0 ? "Đã hủy" : "Chờ xác nhận"}',
+                                  'Trạng thái: ${hoaDons[index].trangThai == 2 ? "Đang giao" : hoaDons[index].trangThai == 0 ? "Đã hủy" : hoaDons[index].trangThai == 3 ? "Đã hoàn thành" : "Chờ xác nhận"}',
                                   style: TextStyle(
                                     color: hoaDons[index].trangThai == 2
-                                        ? Colors.green
+                                        ? Colors.blue
                                         : hoaDons[index].trangThai == 0
                                             ? Colors.red
-                                            : Colors.orange,
+                                            : hoaDons[index].trangThai == 3
+                                                ? Colors.green
+                                                : Colors.orange,
                                   ),
                                 ),
                                 Text('Ngày Đặt: ${hoaDons[index].ngayDatHang}'),
@@ -168,7 +207,8 @@ class _QuanLyDonHangState extends State<QuanLyDonHang> {
                                       icon: const Icon(Icons.check,
                                           color: Colors.green),
                                       onPressed: () {
-                                        // Xử lý logic khi bấm nút (ví dụ: xác nhận đơn hàng)
+                                        duyetDon(
+                                            context, hoaDons[index].maHoaDon);
                                       },
                                     )
                                   : SizedBox.shrink(),

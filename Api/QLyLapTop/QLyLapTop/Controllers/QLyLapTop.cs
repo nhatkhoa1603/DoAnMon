@@ -206,7 +206,23 @@ namespace QLyLapTop.Controllers
         public ActionResult loctheotrangthai(int trangthai)
         {
             var hoadon = dbc.HoaDons
-                .Where(sp => sp.TrangThai == trangthai).ToList();
+                .Where(sp => sp.TrangThai == trangthai).Join(
+                        dbc.KhachHangs,
+                        hd => hd.MaKhachHang,
+                        kh => kh.MaKhachHang,
+                        (hd, kh) => new
+                        {
+                            hd.MaDonHang,
+                            NgayDatHang = hd.NgayDatHang.HasValue
+                        ? hd.NgayDatHang.Value.ToString("yyyy-MM-dd") // Chỉ lấy ngày, tháng, năm
+                        : null,
+                            hd.PhiVanChuyen,
+                            hd.TrangThai,
+                            hd.TongTien,
+                            TenKhachHang = kh.TenKhachHang,
+                            soDienThoai = kh.SoDienThoai
+                        }
+                    ).ToList();
             if(hoadon == null)
             {
                 return NotFound(new { success = false, message = $"khong tim thay trang thai: {trangthai}!" });
@@ -253,6 +269,47 @@ namespace QLyLapTop.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("/hoaDonKhachHang/danhSach/{makhachHang}")]
+        public async Task<IActionResult> danhSachHoaDonKhachHang(int makhachHang)
+        {
+            try
+            {
+                var hoadon = dbc.HoaDons
+                .Where(sp => sp.MaKhachHang == makhachHang).ToList();
+                if (hoadon == null)
+                {
+                    return NotFound(new { success = false, message = $"khong tim thay trang thai: {makhachHang}!" });
+                }
+
+                return Ok(new { success = true, data = hoadon });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = ex.Message });
+            }
+        }
+
+        [HttpGet]
+        [Route("/hoaDon/locTheotrangthaiKhachHang/{trangthai} & {maKhachHang}")]
+        public ActionResult loctheotrangthaiKhachHang(int trangthai,int maKhachHang)
+        {
+            try
+            {
+                var hoadon = dbc.HoaDons
+                .Where(sp => sp.MaKhachHang == maKhachHang && sp.TrangThai == trangthai).ToList();
+                if (hoadon == null)
+                {
+                    return NotFound(new { success = false, message = $"khong tim thay trang thai thong tin!" });
+                }
+
+                return Ok(new { success = true, data = hoadon });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = ex.Message });
+            }
+        }
 
         [HttpPut]
         [Route("/hoaDon/huyDon/{id}")]

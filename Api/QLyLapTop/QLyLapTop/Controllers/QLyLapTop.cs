@@ -351,9 +351,7 @@ namespace QLyLapTop.Controllers
         {
             try
             {
-                var hoadon = dbc.ChiTietHoaDons
-                .Where(sp => sp.MaHoaDon == maHoaDon).ToList();
-                var chiTietHoaDons = await dbc.ChiTietHoaDons
+                var chiTietHoaDons = await dbc.ChiTietHoaDons.Where(sp => sp.MaHoaDon == maHoaDon)
                     .Join(
                         dbc.SanPhams,
                         cthd => cthd.MaSanPham,
@@ -373,7 +371,7 @@ namespace QLyLapTop.Controllers
                     )
                     .ToListAsync();
 
-                if (!hoadon.Any())
+                if (!chiTietHoaDons.Any())
                 {
                     return NotFound(new { success = false, message = "Không tìm thấy chi tiết hóa đơn." });
                 }

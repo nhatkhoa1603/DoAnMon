@@ -45,6 +45,11 @@ class _QuanLyDonHangState extends State<QuanLyDonHang> {
       final data = json.decode(reponse.body);
       if (data['success']) {
         Navigator.pop(context, true);
+        if (selectedFilter == -1) {
+          await fetchDSDon();
+        } else {
+          await fetchDSDonTheoTrangThai(selectedFilter);
+        }
       } else {
         thongBaoLoi(context, data['message']);
       }
@@ -207,8 +212,35 @@ class _QuanLyDonHangState extends State<QuanLyDonHang> {
                                       icon: const Icon(Icons.check,
                                           color: Colors.green),
                                       onPressed: () {
-                                        duyetDon(
-                                            context, hoaDons[index].maHoaDon);
+                                        showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return AlertDialog(
+                                              title: Text("Xác nhận"),
+                                              content: Text(
+                                                  "Bạn có chắc chắn muốn duyệt đơn này không?"),
+                                              actions: [
+                                                TextButton(
+                                                  onPressed: () {
+                                                    Navigator.of(context)
+                                                        .pop(); // Đóng dialog
+                                                  },
+                                                  child: Text("Hủy"),
+                                                ),
+                                                ElevatedButton(
+                                                  onPressed: () async {
+                                                    // Thực hiện cập nhật thông tin
+                                                    duyetDon(
+                                                        context,
+                                                        hoaDons[index]
+                                                            .maHoaDon);
+                                                  },
+                                                  child: Text("Xác nhận"),
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                        );
                                       },
                                     )
                                   : SizedBox.shrink(),

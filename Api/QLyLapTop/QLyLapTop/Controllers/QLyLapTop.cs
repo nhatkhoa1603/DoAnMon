@@ -137,7 +137,7 @@ namespace QLyLapTop.Controllers
         //------------------- Tai Khoan ------------------------//
         [HttpPost]
         [Route("/taiKhoan/Them")]
-        public IActionResult ThemTaiKhoan(String tenDangNhap,TaiKhoan obj)
+        public IActionResult ThemTaiKhoan(TaiKhoan obj)
         {
             try
             {
@@ -268,6 +268,22 @@ namespace QLyLapTop.Controllers
             dbc.SaveChanges();
 
             return Ok(new { success = true, message = "huy don thanh cong!" });
+        }
+
+        [HttpPut]
+        [Route("/hoaDon/capNhat/{id}")]
+        public ActionResult capNhatHoaDon(int id)
+        {
+            var hoadon = dbc.HoaDons.Find(id);
+            if (hoadon == null)
+            {
+                return NotFound(new { success = false, message = $"khong tim thay don hang voi ID: {id}!" });
+            }
+
+            hoadon.TrangThai = 2;
+            dbc.SaveChanges();
+
+            return Ok(new { success = true, message = "Cap nhat thanh cong!" });
         }
 
         //------------------- Chi tiet don hang ------------------------//

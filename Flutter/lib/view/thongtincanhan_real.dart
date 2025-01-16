@@ -5,7 +5,9 @@ import '../model/thongTinCaNhan.dart';
 import '../view/thongtincanhan.dart';
 
 class tTinCaNhan extends StatefulWidget {
-  tTinCaNhan({Key? key}) : super(key: key);
+  final String userId;
+
+  tTinCaNhan({Key? key, required this.userId}) : super(key: key);
 
   @override
   _tTinCaNhan createState() => _tTinCaNhan();
@@ -25,7 +27,8 @@ class _tTinCaNhan extends State<tTinCaNhan> {
   }
 
   Future<void> _fetchUserInfo() async {
-    final response = await http.get(Uri.parse("https://localhost:7042/khachHang/5"));
+    final response = await http
+        .get(Uri.parse("https://10.0.2.2:7042/khachHang/${widget.userId}"));
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
@@ -55,7 +58,7 @@ class _tTinCaNhan extends State<tTinCaNhan> {
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.of(context).pop(),
         ),
-       title: const Text(
+        title: const Text(
           'Thông tin cá nhân',
           style: TextStyle(color: Colors.white),
         ),
@@ -80,12 +83,12 @@ class _tTinCaNhan extends State<tTinCaNhan> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-                'Thông tin cá nhân',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
+              'Thông tin cá nhân',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
               ),
+            ),
             const SizedBox(height: 20),
             _buildInfoCard('Họ và tên', _nameController.text),
             const SizedBox(height: 16),
@@ -105,7 +108,9 @@ class _tTinCaNhan extends State<tTinCaNhan> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => PersonalInfoScreen(),
+              builder: (context) => PersonalInfoScreen(
+                  //userId: '{id}',
+                  ),
             ),
           );
         },
@@ -123,7 +128,8 @@ class _tTinCaNhan extends State<tTinCaNhan> {
       ),
       margin: const EdgeInsets.symmetric(vertical: 8),
       child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         title: Text(
           label,
           style: const TextStyle(

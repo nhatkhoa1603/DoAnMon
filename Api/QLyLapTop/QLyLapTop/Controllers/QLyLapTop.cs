@@ -70,16 +70,17 @@ namespace QLyLapTop.Controllers
 
         //------------------- Thong tin khach hang ------------------------//
         [HttpGet]
-        [Route("/khachHang/{id}")]
-        public IActionResult LayThongTinKhachHang(int id)
+        [Route("/khachHang/{id:int}")]
+        public async Task<IActionResult> LayThongTinKhachHang(int id)
         {
-            var tasks = dbc.KhachHangs.Find(id);
+            var tasks = await dbc.KhachHangs.FirstOrDefaultAsync(u => u.MaKhachHang == id);
             if (tasks == null)
             {
                 return NotFound(new { success = false, message = $"Không tìm Thấy khách hàng với ID: {id}!" });
             }
             return Ok(new { success = true, data = tasks });
         }
+
 
         [HttpPut]
         [Route("/khachHang/Sua/{id}")]
@@ -108,65 +109,152 @@ namespace QLyLapTop.Controllers
         {
             try
             {
-                var ktraEmail = dbc.KhachHangs.Where(kt => kt.Email == obj.Email).ToList();
-                var ktraSDT = dbc.KhachHangs.Where(kt => kt.SoDienThoai == obj.SoDienThoai).ToList();
+                var errors = new List<string>();
 
-                if (ktraEmail.Count >0)
+                if (obj == null)
                 {
-                    return NotFound(new { success = false, message = $"Trùng Email!" });
+                    return BadRequest(new { success = false, message = "Đăng ký thất bại", errors = new[] { "Dữ liệu khách hàng không được để trống!" } });
                 }
-                if (ktraSDT.Count >0)
+
+                // Kiểm tra các trường bắt buộc
+                if (string.IsNullOrWhiteSpace(obj.TenKhachHang))
                 {
-                    return NotFound(new { success = false, message = $"Trùng SĐT!" });
+                    errors.Add("Tên khách hàng không được để trống!");
                 }
-                //obj.TrangThai = 1; // Gán trạng thái cho giỏ hàng (ví dụ: 1 = Đang xử lý)
+
+                if (string.IsNullOrWhiteSpace(obj.Email))
+                {
+                    errors.Add("Email không được để trống!");
+                }
+
+                if (string.IsNullOrWhiteSpace(obj.SoDienThoai))
+                {
+                    errors.Add("Số điện thoại không được để trống!");
+                }
+
+                // Kiểm tra định dạng email nếu có giá trị
+                if (!string.IsNullOrWhiteSpace(obj.Email))
+                {
+                    var emailRegex = new System.Text.RegularExpressions.Regex(@"^[^\s@]+@[^\s@]+\.[^\s@]+$");
+                    if (!emailRegex.IsMatch(obj.Email))
+                    {
+                        errors.Add("Email không hợp lệ!");
+                    }
+                    else if (dbc.KhachHangs.Any(kt => kt.Email == obj.Email))
+                    {
+                        errors.Add("Email đã tồn tại trong hệ thống!");
+                    }
+                }
+
+                // Kiểm tra số điện thoại nếu có giá trị
+                if (!string.IsNullOrWhiteSpace(obj.SoDienThoai))
+                {
+                    if (!System.Text.RegularExpressions.Regex.IsMatch(obj.SoDienThoai, @"^\d+$"))
+                    {
+                        errors.Add("Số điện thoại phải là chuỗi số hợp lệ!");
+                    }
+                    else if (dbc.KhachHangs.Any(kt => kt.SoDienThoai == obj.SoDienThoai))
+                    {
+                        errors.Add("Số điện thoại đã tồn tại trong hệ thống!");
+                    }
+                }
+
+                // Nếu có bất kỳ lỗi nào, trả về BadRequest với danh sách lỗi
+                if (errors.Any())
+                {
+                    return BadRequest(new { success = false, message = "Đăng ký thất bại", errors });
+                }
+
+                // Nếu không có lỗi, tiếp tục xử lý
+                obj.GioiTinh ??= "Không xác định";
+                obj.TrangThai ??= 1;
+
                 dbc.KhachHangs.Add(obj);
-
                 dbc.SaveChanges();
 
-                return Ok(new { success = true, message = "Thêm khach hang thành công!" });
-
+                return Ok(new { success = true, message = "Đăng ký thành công!" });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "Có lỗi xảy ra khi lưu thay đổi. Vui lòng kiểm tra lại dữ liệu.");
+                var innerException = ex.InnerException?.Message ?? ex.Message;
+                return StatusCode(500, new
+                {
+                    success = false,
+                    message = "Đăng ký thất bại",
+                    errors = new[] { "Có lỗi xảy ra khi lưu thay đổi" },
+                    error = innerException
+                });
             }
-  
         }
 
-        //------------------- Tai Khoan ------------------------//
         [HttpPost]
         [Route("/taiKhoan/Them")]
         public IActionResult ThemTaiKhoan(TaiKhoan obj)
         {
             try
             {
-                var ktra = dbc.TaiKhoans.Where(kt => kt.TenDangNhap == obj.TenDangNhap).ToList();
+                var errors = new List<string>();
 
-                if (ktra.Count > 0)
+                if (obj == null)
                 {
-                    return NotFound(new { success = false, message = $"Ten Dang nhap da ton tai!" });
+                    return BadRequest(new { success = false, message = "Đăng ký thất bại", errors = new[] { "Dữ liệu tài khoản không được để trống!" } });
                 }
 
-                dbc.TaiKhoans.Add(obj);
+                // Kiểm tra các trường bắt buộc
+                if (string.IsNullOrWhiteSpace(obj.TenDangNhap))
+                {
+                    errors.Add("Tên đăng nhập không được để trống!");
+                }
 
+                if (string.IsNullOrWhiteSpace(obj.MatKhau))
+                {
+                    errors.Add("Mật khẩu không được để trống!");
+                }
+                else if (obj.MatKhau.Length < 6)
+                {
+                    errors.Add("Mật khẩu phải có ít nhất 6 ký tự!");
+                }
+
+                // Kiểm tra tên đăng nhập đã tồn tại nếu có giá trị
+                if (!string.IsNullOrWhiteSpace(obj.TenDangNhap) && dbc.TaiKhoans.Any(kt => kt.TenDangNhap == obj.TenDangNhap))
+                {
+                    errors.Add("Tên đăng nhập đã tồn tại!");
+                }
+
+                // Nếu có bất kỳ lỗi nào, trả về BadRequest với danh sách lỗi
+                if (errors.Any())
+                {
+                    return BadRequest(new { success = false, message = "Đăng ký thất bại", errors });
+                }
+
+                // Nếu không có lỗi, tiếp tục xử lý
+                obj.TrangThai ??= 1;
+
+                dbc.TaiKhoans.Add(obj);
                 dbc.SaveChanges();
 
-                return Ok(new { success = true, message = "Thêm tai khoan thành công!" });
-
+                return Ok(new { success = true, message = "Đăng ký thành công!" });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "Có lỗi xảy ra khi lưu thay đổi. Vui lòng kiểm tra lại dữ liệu.");
+                var innerException = ex.InnerException?.Message ?? ex.Message;
+                return StatusCode(500, new
+                {
+                    success = false,
+                    message = "Đăng ký thất bại",
+                    errors = new[] { "Có lỗi xảy ra khi lưu thay đổi" },
+                    error = innerException
+                });
             }
         }
+
 
         [HttpPost]
         [Route("/taiKhoan/DangNhap")]
         public async Task<IActionResult> DangNhap( TaiKhoan obj)
         {
             var taiKhoan = await dbc.TaiKhoans
-                .FirstOrDefaultAsync(t => t.TenDangNhap == obj.TenDangNhap && t.MatKhau == obj.MatKhau && t.TrangThai);
+                .FirstOrDefaultAsync(t => t.TenDangNhap == obj.TenDangNhap && t.MatKhau == obj.MatKhau );
 
             if (taiKhoan == null )
             {
@@ -182,9 +270,9 @@ namespace QLyLapTop.Controllers
         public async Task<IActionResult> DangNhap(int id,String mkcu, TaiKhoan obj)
         {
             var taiKhoan = await dbc.TaiKhoans
-                .FirstOrDefaultAsync(t => t.MaTaiKhoan == id && t.TrangThai);
+                .FirstOrDefaultAsync(t => t.MaTaiKhoan == id );
             var ktraMK = await dbc.TaiKhoans
-                .FirstOrDefaultAsync(t => t.MatKhau == mkcu && t.TrangThai);
+                .FirstOrDefaultAsync(t => t.MatKhau == mkcu);
 
             if (taiKhoan == null)
             {

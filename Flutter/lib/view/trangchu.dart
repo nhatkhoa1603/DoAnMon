@@ -1,12 +1,13 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:doanmonhoc/model/SanPham.dart';
-import 'package:doanmonhoc/view/chitietsp.dart';
+//import 'package:doanmonhoc/view/chitietsp.dart';
 import 'package:doanmonhoc/view/giohang.dart';
 import 'package:doanmonhoc/view/taikhoan.dart';
 import 'danhmuc.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter/services.dart';
 
 class TrangChu extends StatefulWidget {
   @override
@@ -14,7 +15,9 @@ class TrangChu extends StatefulWidget {
 }
 
 class _TrangChuState extends State<TrangChu> {
-//xu ly api
+  // FocusNode _searchFocusNode = FocusNode();
+  TextEditingController _searchController = TextEditingController();
+  TextEditingController _searchSanPham = TextEditingController();
 
   List<Sanpham> sanPhams = [];
 
@@ -29,7 +32,17 @@ class _TrangChuState extends State<TrangChu> {
     }
   }
 
-//ht
+  //  Future<void> fetchTimSp() async {
+  //   final response =
+  //       await http.get(Uri.parse("https://10.0.2.2:7042/sanPham/timkiem/$_searchSanPham"));
+  //   if (response.statusCode == 200) {
+  //     final List<dynamic> dataTimSp = json.decode(response.body)['data'];
+  //     setState(() {
+  //       sanPhams = dataTimSp.map((value) => Sanpham.fromJson(value)).toList();
+  //     });
+  //   }
+  // }
+
   final PageController _pageController = PageController();
   Timer? _timer;
   int _currentPage = 0;
@@ -79,8 +92,13 @@ class _TrangChuState extends State<TrangChu> {
   @override
   void initState() {
     super.initState();
-    _startAutoScroll();
-    fetchdsSanPham(); //1
+    fetchdsSanPham();
+    //fetchTimSp();
+    _searchController.addListener(() {});
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // SystemChannels.textInput.invokeMethod('TextInput.show');
+    });
   }
 
   void _onItemTapped(int index) {
@@ -120,6 +138,7 @@ class _TrangChuState extends State<TrangChu> {
 
   @override
   void dispose() {
+    _searchController.dispose();
     _timer?.cancel();
     _pageController.dispose();
     super.dispose();
@@ -293,130 +312,116 @@ class _TrangChuState extends State<TrangChu> {
             ],
           ),
           SizedBox(height: 16),
-          Container(
-            height: 320,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: sanPhams.length, //2
-              itemBuilder: (context, index) {
-                final laptop = sanPhams[index]; //3
-                return GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => Chitietsp()),
-                    );
-                  },
-                  child: Container(
-                    width: 250,
-                    margin: EdgeInsets.only(right: 16),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 4,
-                          offset: Offset(0, 2),
+          GridView.builder(
+            shrinkWrap: true,
+            physics: NeverScrollableScrollPhysics(),
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              mainAxisSpacing: 12,
+              crossAxisSpacing: 12,
+              childAspectRatio: 0.68,
+            ),
+            itemCount: sanPhams.length,
+            itemBuilder: (context, index) {
+              final laptop = sanPhams[index];
+              return GestureDetector(
+                onTap: () {
+                  Navigator.pushNamed(
+                    context,
+                    '/chitietsanpham',
+                    arguments: laptop
+                        .maSanPham, //truyền cái mã sản phẩm sang chi tiết sp screen
+                  );
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 4,
+                        offset: Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ClipRRect(
+                        borderRadius:
+                            BorderRadius.vertical(top: Radius.circular(12)),
+                        child: Container(
+                          height: 120,
+                          width: double.infinity,
+                          child: Image.network(
+                            laptop.hinhAnh,
+                            fit: BoxFit.cover,
+                          ),
                         ),
-                      ],
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Stack(
-                          children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.vertical(
-                                  top: Radius.circular(12)),
-                              child: Image.network(
-                                laptop.hinhAnh,
-                                height: 100,
-                                width: double.infinity,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          ],
-                        ),
-                        Padding(
-                          padding: EdgeInsets.all(12),
+                      ),
+                      Expanded(
+                        child: Padding(
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 8, vertical: 6),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(
-                                '${laptop.maThuongHieu}',
-                                style: TextStyle(
-                                  color: Colors.grey[600],
-                                  fontSize: 12,
-                                ),
-                              ),
-                              SizedBox(height: 4),
                               Text(
                                 '${laptop.tenSanPham}',
                                 style: TextStyle(
-                                  fontSize: 16,
+                                  fontSize: 14,
                                   fontWeight: FontWeight.bold,
                                 ),
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                               ),
-                              SizedBox(height: 4),
                               Text(
-                                "Ram :${laptop.Ram} CPU :${laptop.CPU}",
+                                "Ram: ${laptop.Ram}\nCPU: ${laptop.CPU}",
                                 style: TextStyle(
                                   color: Colors.grey[600],
                                   fontSize: 12,
+                                  height: 1.3,
                                 ),
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                               ),
-                              SizedBox(height: 8),
                               Text(
-                                // '${laptop['price'].toString().replaceAllMapped(RegExp(r'(\d{3})(?=\d)'), (Match m) => '${m[1]},')}đ'
-                                "${laptop.giaXuat}",
+                                "${laptop.giaXuat} đ",
                                 style: TextStyle(
                                   color: Colors.red,
-                                  fontSize: 18,
+                                  fontSize: 15,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              // if (laptop['originalPrice'] != null)
-                              //   Text(
-                              //     '${laptop['originalPrice'].toString().replaceAllMapped(RegExp(r'(\d{3})(?=\d)'), (Match m) => '${m[1]},')}đ',
-                              //     style: TextStyle(
-                              //       color: Colors.grey,
-                              //       fontSize: 14,
-                              //       decoration: TextDecoration.lineThrough,
-                              //     ),
-                              //   ),
                             ],
                           ),
                         ),
-                        Spacer(),
-                        Container(
-                          width: double.infinity,
-                          padding: EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: Colors.blue,
-                            borderRadius: BorderRadius.vertical(
-                              bottom: Radius.circular(12),
-                            ),
-                          ),
-                          child: Text(
-                            'Mua ngay',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
+                      ),
+                      Container(
+                        width: double.infinity,
+                        padding: EdgeInsets.symmetric(vertical: 8),
+                        decoration: BoxDecoration(
+                          color: Colors.blue,
+                          borderRadius: BorderRadius.vertical(
+                              bottom: Radius.circular(12)),
                         ),
-                      ],
-                    ),
+                        child: Text(
+                          'Mua ngay',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 13,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ],
                   ),
-                );
-              },
-            ),
+                ),
+              );
+            },
           ),
         ],
       ),
@@ -428,6 +433,7 @@ class _TrangChuState extends State<TrangChu> {
     return Scaffold(
       backgroundColor: const Color(0xFFFAFAFA),
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: const Color(0xFF2196F3),
         elevation: 0,
         title: Container(
@@ -436,24 +442,42 @@ class _TrangChuState extends State<TrangChu> {
             color: Colors.grey[100],
             borderRadius: BorderRadius.circular(20),
           ),
-          child: TextField(
-            decoration: InputDecoration(
-              prefixIcon: Icon(Icons.search, color: Colors.grey),
-              hintText: 'Tìm kiếm laptop...',
-              hintStyle: TextStyle(fontSize: 14),
-              border: InputBorder.none,
-              contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 0),
+          child: GestureDetector(
+            child: TextField(
+              controller: _searchSanPham,
+              decoration: InputDecoration(
+                hintText: 'Tìm kiếm laptop...',
+                hintStyle: TextStyle(fontSize: 14),
+                border: InputBorder.none,
+                contentPadding: EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 0), // Điều chỉnh khoảng cách vào bên trong
+              ),
             ),
           ),
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.shopping_cart_outlined),
+            icon: Icon(Icons.search),
+            color: Colors.black87,
+            // onPressed: () {
+            //   fetchTimSp();
+            // },
+            onPressed: () {
+              if (_searchSanPham.text.isNotEmpty)
+                Navigator.pushNamed(context, '/timkiem',
+                    arguments: _searchSanPham.text);
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.shopping_cart),
             color: Colors.black87,
             onPressed: () {
-              // Navigate to shopping cart page
+              // Chuyển sang màn hình giỏ hàng
               Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => Giohang()));
+                context,
+                MaterialPageRoute(builder: (context) => Giohang()),
+              );
             },
           ),
         ],
@@ -470,11 +494,19 @@ class _TrangChuState extends State<TrangChu> {
         onTap: _onItemTapped,
         type: BottomNavigationBarType.fixed,
         selectedItemColor: Colors.blue,
-        items: [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Trang chủ'),
+        items: const [
           BottomNavigationBarItem(
-              icon: Icon(Icons.category), label: 'Danh mục'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Tài khoản'),
+            icon: Icon(Icons.home),
+            label: 'Trang chủ',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.category),
+            label: 'Danh mục',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Tài khoản',
+          ),
         ],
       ),
     );

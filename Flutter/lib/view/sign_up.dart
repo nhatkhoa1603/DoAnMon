@@ -5,15 +5,6 @@ import 'dart:io';
 import '../Widget/text_field.dart';
 import 'login.dart';
 
-class MyHttpOverrides extends HttpOverrides {
-  @override
-  HttpClient createHttpClient(SecurityContext? context) {
-    return super.createHttpClient(context)
-      ..badCertificateCallback =
-          (X509Certificate cert, String host, int port) => true;
-  }
-}
-
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
 
@@ -24,11 +15,11 @@ class SignUpScreen extends StatefulWidget {
 class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController nameController = TextEditingController();
-  final TextEditingController genderController = TextEditingController();
   final TextEditingController addressController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  String? selectedGender;
   String? selectedAccountType;
   bool isLoading = false;
 
@@ -36,7 +27,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
   void dispose() {
     usernameController.dispose();
     nameController.dispose();
-    genderController.dispose();
     addressController.dispose();
     phoneController.dispose();
     emailController.dispose();
@@ -47,54 +37,66 @@ class _SignUpScreenState extends State<SignUpScreen> {
   Future<void> signUpUser() async {
     final username = usernameController.text.trim();
     final name = nameController.text.trim();
-    final gender = genderController.text.trim();
+    final gender = selectedGender;
     final address = addressController.text.trim();
     final phone = phoneController.text.trim();
     final email = emailController.text.trim();
     final password = passwordController.text.trim();
     final accountType = selectedAccountType;
 
+    setState(() {
+      isLoading = true;
+    });
+
     // Validate inputs
     if (username.isEmpty ||
         name.isEmpty ||
-        gender.isEmpty ||
+        gender == null ||
         address.isEmpty ||
         phone.isEmpty ||
         email.isEmpty ||
         password.isEmpty ||
         accountType == null) {
       showSnackBar(context, "Vui lòng điền đầy đủ thông tin");
+      setState(() {
+        isLoading = false;
+      });
       return;
+    }
+
+    bool isValidEmail(String email) {
+      return email.toLowerCase().endsWith('@gmail.com');
     }
 
     if (!isValidEmail(email)) {
       showSnackBar(context, "Email phải có định dạng @gmail.com");
+      setState(() {
+        isLoading = false;
+      });
       return;
     }
 
     if (password.length < 6) {
       showSnackBar(context, "Mật khẩu phải có ít nhất 6 ký tự");
+      setState(() {
+        isLoading = false;
+      });
       return;
     }
 
     if (!RegExp(r'^[0-9]{10}$').hasMatch(phone)) {
       showSnackBar(context, "Số điện thoại không hợp lệ");
+      setState(() {
+        isLoading = false;
+      });
       return;
     }
 
-    setState(() {
-      isLoading = true;
-    });
-
     try {
-      final response = await http.post(
-        Uri.parse('https://localhost:7042/taiKhoan/Them'),
-        // Đổi endpoint cho phù hợp
+      final responseKhachHang = await http.post(
+        Uri.parse('https://10.0.2.2:7042/KhachHang/Them'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
-          'tenDangNhap': username,
-          'MatKhau': password,
-          'LoaiTaiKhoan': accountType,
           'TenKhachHang': name,
           'GioiTinh': gender,
           'DiaChi': address,
@@ -103,21 +105,52 @@ class _SignUpScreenState extends State<SignUpScreen> {
         }),
       );
 
-      print('Response status: ${response.statusCode}');
-      print('Response body: ${response.body}');
+      print('Data sent to API: ${jsonEncode({
+            'TenKhachHang': name,
+            'GioiTinh': gender,
+            'DiaChi': address,
+            'SoDienThoai': phone,
+            'Email': email,
+          })}');
+      print('KhachHang Response status: ${responseKhachHang.statusCode}');
+      print('KhachHang Response body: ${responseKhachHang.body}');
 
-      final responseData = jsonDecode(response.body);
+      // Send request to TaiKhoan/Them
+      final responseTaiKhoan = await http.post(
+        Uri.parse('https://10.0.2.2:7042/TaiKhoan/Them'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'tenDangNhap': username,
+          'matKhau': password,
+          'loaiTaiKhoan': accountType,
+        }),
+      );
 
-      if (response.statusCode == 200 && responseData['success'] == true) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(
-            builder: (context) => const LoginApp(),
-          ),
-        );
-        showSnackBar(context, "Đăng ký thành công!");
+      print('TaiKhoan Response status: ${responseTaiKhoan.statusCode}');
+      print('TaiKhoan Response body: ${responseTaiKhoan.body}');
+
+      // Handle responses
+      if (responseKhachHang.statusCode == 200 &&
+          responseTaiKhoan.statusCode == 200) {
+        final responseDataKhachHang = jsonDecode(responseKhachHang.body);
+        final responseDataTaiKhoan = jsonDecode(responseTaiKhoan.body);
+
+        if (responseDataKhachHang['success'] == true &&
+            responseDataTaiKhoan['success'] == true) {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (context) => const LoginApp(),
+            ),
+          );
+          showSnackBar(context, "Đăng ký thành công!");
+        } else {
+          showSnackBar(
+              context,
+              responseDataKhachHang['message'] ??
+                  "Đăng ký thất bại, vui lòng thử lại");
+        }
       } else {
-        showSnackBar(context,
-            responseData['message'] ?? "Đăng ký thất bại, vui lòng thử lại");
+        showSnackBar(context, "Đăng ký thất bại, vui lòng thử lại");
       }
     } catch (e) {
       print('Error during sign-up: $e');
@@ -127,10 +160,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
         isLoading = false;
       });
     }
-  }
-
-  bool isValidEmail(String email) {
-    return email.toLowerCase().endsWith('@gmail.com');
   }
 
   void showSnackBar(BuildContext context, String message) {
@@ -167,10 +196,39 @@ class _SignUpScreenState extends State<SignUpScreen> {
               icon: Icons.person,
             ),
             const SizedBox(height: 10),
-            TextFieldInput(
-              textEditingController: genderController,
-              hintText: "Nhập giới tính",
-              icon: Icons.people,
+            // Gender Dropdown
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 15),
+              decoration: BoxDecoration(
+                color: Colors.grey[100],
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.people, color: Colors.grey),
+                  const SizedBox(width: 15),
+                  Expanded(
+                    child: DropdownButtonHideUnderline(
+                      child: DropdownButton<String>(
+                        value: selectedGender,
+                        hint: const Text("Chọn giới tính"),
+                        isExpanded: true,
+                        items: const [
+                          DropdownMenuItem(value: "Nam", child: Text("Nam")),
+                          DropdownMenuItem(value: "Nữ", child: Text("Nữ")),
+                          DropdownMenuItem(value: "Khác", child: Text("Khác")),
+                        ],
+                        onChanged: (value) {
+                          setState(() {
+                            selectedGender = value;
+                          });
+                        },
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
             const SizedBox(height: 10),
             TextFieldInput(
@@ -217,10 +275,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         isExpanded: true,
                         items: const [
                           DropdownMenuItem(
-                              value: "Cá nhân", child: Text("Cá nhân")),
+                              value: "KHACHHANG", child: Text("KHACHHANG")),
                           DropdownMenuItem(
-                              value: "Doanh nghiệp",
-                              child: Text("Doanh nghiệp")),
+                              value: "ADMIN", child: Text("ADMIN")),
                         ],
                         onChanged: (value) {
                           setState(() {

@@ -24,5 +24,5 @@ public partial class TaiKhoan
     [StringLength(20)]
     public string? LoaiTaiKhoan { get; set; }
 
-    public bool TrangThai { get; set; }
+    public int? TrangThai { get; set; } = 1;
 }

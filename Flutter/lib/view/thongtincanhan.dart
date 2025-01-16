@@ -4,7 +4,7 @@ import 'dart:convert';
 import '../model/thongTinCaNhan.dart';
 
 class PersonalInfoScreen extends StatefulWidget {
-  PersonalInfoScreen({Key? key}) : super(key: key);
+  // PersonalInfoScreen({Key? key}) : super(key: key);
 
   @override
   _PersonalInfoScreenState createState() => _PersonalInfoScreenState();
@@ -25,29 +25,30 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
   }
 
   Future<void> _fetchUserInfo() async {
-    final response = await http.get(Uri.parse("https://localhost:7042/khachHang/5"));
-
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      setState(() {
-        final user = thongTinCaNhan.fromJson(data);
-        _nameController.text = user.tenKhachHang;
-        _selectedGender = user.gioiTinh;
-        _phoneController.text = user.soDienThoai;
-        _diaChiController.text = user.diaChi ?? "";
-        _emailController.text = user.email;
-      });
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Không thể tải thông tin người dùng'),
-          backgroundColor: Colors.red,
-        ),
-      );
+    final url = Uri.parse("https://10.0.2.2.com/khachHang/${1}");
+    try {
+      final response = await http.get(url);
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        setState(() {
+          final user = thongTinCaNhan.fromJson(data);
+          _nameController.text = user.tenKhachHang;
+          _selectedGender = user.gioiTinh;
+          _phoneController.text = user.soDienThoai;
+          _diaChiController.text = user.diaChi ?? "";
+          _emailController.text = user.email;
+        });
+      } else {
+        _showErrorSnackBar(
+            'Không thể tải thông tin người dùng. Mã lỗi: ${response.statusCode}');
+      }
+    } catch (e) {
+      _showErrorSnackBar('Có lỗi xảy ra khi tải thông tin người dùng.');
     }
   }
 
   Future<void> _updateUserInfo() async {
+    final url = Uri.parse("https://10.0.2.2.com/khachHang/Sua/${1}");
     final updatedUser = {
       "tenKhachHang": _nameController.text.trim(),
       "gioiTinh": _selectedGender,
@@ -56,22 +57,31 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
       "email": _emailController.text.trim(),
     };
 
-    final response = await http.put(
-      Uri.parse("https://localhost:7042/khachHang/Sua/5"),
-      headers: {"Content-Type": "application/json"},
-      body: json.encode(updatedUser),
-    );
-
-    if (response.statusCode == 200) {
-      _showSuccessDialog();
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Cập nhật thông tin thất bại'),
-          backgroundColor: Colors.red,
-        ),
+    try {
+      final response = await http.put(
+        url,
+        headers: {"Content-Type": "application/json"},
+        body: json.encode(updatedUser),
       );
+
+      if (response.statusCode == 200) {
+        _showSuccessDialog();
+      } else {
+        _showErrorSnackBar(
+            'Cập nhật thông tin thất bại. Mã lỗi: ${response.statusCode}');
+      }
+    } catch (e) {
+      _showErrorSnackBar('Có lỗi xảy ra khi cập nhật thông tin.');
     }
+  }
+
+  void _showErrorSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.red,
+      ),
+    );
   }
 
   void _showSuccessDialog() {
@@ -108,24 +118,9 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: const Text(
-          'Thông tin cá nhân',
-          style: TextStyle(color: Colors.white),
-        ),
+        title: const Text('Thông tin cá nhân',
+            style: TextStyle(color: Colors.white)),
         backgroundColor: const Color(0xFF2196F3),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.help_outline, color: Colors.white),
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Nhập thông tin cá nhân của bạn'),
-                  duration: Duration(seconds: 2),
-                ),
-              );
-            },
-          ),
-        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -136,138 +131,32 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
             children: [
               const Text(
                 'Chỉnh sửa thông tin cá nhân',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 20),
-              TextFormField(
-                controller: _nameController,
-                decoration: const InputDecoration(
-                  labelText: 'Họ và tên',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.person, color: Colors.blue),
-                ),
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'Vui lòng nhập họ tên';
-                  }
-                  return null;
-                },
-              ),
+              _buildTextField(_nameController, 'Họ và tên', Icons.person),
               const SizedBox(height: 16),
-              DropdownButtonFormField<String>(
-                value: _selectedGender,
-                decoration: const InputDecoration(
-                  labelText: 'Giới tính',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.people, color: Colors.blue),
-                ),
-                items: const [
-                  DropdownMenuItem(
-                    value: 'Nam',
-                    child: Row(
-                      children: [
-                        Icon(Icons.male, color: Colors.blue),
-                        SizedBox(width: 10),
-                        Text('Nam'),
-                      ],
-                    ),
-                  ),
-                  DropdownMenuItem(
-                    value: 'Nữ',
-                    child: Row(
-                      children: [
-                        Icon(Icons.female, color: Colors.pink),
-                        SizedBox(width: 10),
-                        Text('Nữ'),
-                      ],
-                    ),
-                  ),
-                ],
-                onChanged: (String? value) {
-                  setState(() {
-                    _selectedGender = value;
-                  });
-                },
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Vui lòng chọn giới tính';
-                  }
-                  return null;
-                },
-              ),
+              _buildDropdownField(),
               const SizedBox(height: 16),
-              TextFormField(
-                controller: _phoneController,
-                decoration: const InputDecoration(
-                  labelText: 'Số điện thoại',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.phone, color: Colors.blue),
-                ),
-                keyboardType: TextInputType.phone,
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'Vui lòng nhập số điện thoại';
-                  }
-                  if (!RegExp(r'^\d{10}$').hasMatch(value)) {
-                    return 'Số điện thoại không hợp lệ';
-                  }
-                  return null;
-                },
-              ),
+              _buildTextField(_phoneController, 'Số điện thoại', Icons.phone,
+                  keyboardType: TextInputType.phone, validator: _validatePhone),
               const SizedBox(height: 16),
-              TextFormField(
-                controller: _diaChiController,
-                decoration: const InputDecoration(
-                  labelText: 'Địa chỉ',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.home, color: Colors.blue),
-                ),
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'Vui lòng nhập địa chỉ';
-                  }
-                  return null;
-                },
-              ),
+              _buildTextField(_diaChiController, 'Địa chỉ', Icons.home),
               const SizedBox(height: 16),
-              TextFormField(
-                controller: _emailController,
-                decoration: const InputDecoration(
-                  labelText: 'Email',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.email, color: Colors.blue),
-                ),
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'Vui lòng nhập email';
-                  }
-                  return null;
-                },
-              ),
+              _buildTextField(_emailController, 'Email', Icons.email,
+                  validator: _validateEmail),
               const SizedBox(height: 24),
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton.icon(
                   icon: const Icon(Icons.save, color: Colors.white),
-                  label: const Text(
-                    'Lưu thông tin',
-                    style: TextStyle(fontSize: 16, color: Colors.white),
-                  ),
+                  label: const Text('Lưu thông tin',
+                      style: TextStyle(fontSize: 16)),
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
                       _updateUserInfo();
                     }
                   },
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 10),
-                    backgroundColor: Colors.blue,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
                 ),
               ),
             ],
@@ -275,6 +164,74 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
         ),
       ),
     );
+  }
+
+  Widget _buildTextField(
+      TextEditingController controller, String label, IconData icon,
+      {TextInputType keyboardType = TextInputType.text,
+      String? Function(String?)? validator}) {
+    return TextFormField(
+      controller: controller,
+      keyboardType: keyboardType,
+      decoration: InputDecoration(
+        labelText: label,
+        border: const OutlineInputBorder(),
+        prefixIcon: Icon(icon, color: Colors.blue),
+      ),
+      validator: validator ??
+          (value) {
+            if (value == null || value.trim().isEmpty) {
+              return 'Vui lòng nhập $label';
+            }
+            return null;
+          },
+    );
+  }
+
+  Widget _buildDropdownField() {
+    return DropdownButtonFormField<String>(
+      value: _selectedGender,
+      decoration: const InputDecoration(
+        labelText: 'Giới tính',
+        border: OutlineInputBorder(),
+        prefixIcon: Icon(Icons.people, color: Colors.blue),
+      ),
+      items: const [
+        DropdownMenuItem(value: 'Nam', child: Text('Nam')),
+        DropdownMenuItem(value: 'Nữ', child: Text('Nữ')),
+      ],
+      onChanged: (value) {
+        setState(() {
+          _selectedGender = value;
+        });
+      },
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Vui lòng chọn giới tính';
+        }
+        return null;
+      },
+    );
+  }
+
+  String? _validatePhone(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return 'Vui lòng nhập số điện thoại';
+    }
+    if (!RegExp(r'^\d{10}$').hasMatch(value)) {
+      return 'Số điện thoại không hợp lệ';
+    }
+    return null;
+  }
+
+  String? _validateEmail(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return 'Vui lòng nhập email';
+    }
+    if (!RegExp(r'^[^@]+@[^@]+\.[^@]+$').hasMatch(value)) {
+      return 'Email không hợp lệ';
+    }
+    return null;
   }
 
   @override

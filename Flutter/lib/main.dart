@@ -11,6 +11,9 @@ import 'package:doanmonhoc/view/sign_up.dart';
 import 'package:doanmonhoc/view/taikhoan.dart';
 import 'package:doanmonhoc/view/thanhtoan.dart';
 import 'package:doanmonhoc/view/thongtincanhan.dart';
+import 'package:doanmonhoc/view/thongtincanhan_real.dart';
+
+import 'package:doanmonhoc/view/timkiemSP.dart';
 import 'package:flutter/material.dart';
 //import 'screen/danhmuc.dart';
 //import 'screen/taikhoang.dart';
@@ -50,13 +53,16 @@ class MyApp extends StatelessWidget {
         '/taikhoan': (context) => TaiKhoan(),
         '/giohang': (context) => Giohang(),
         '/caidat': (context) => CaiDat(),
-        '/chinhsuattcanhan': (context) => PersonalInfoScreen(),
+        '/chinhsuattcanhan': (context) => PersonalInfoScreen(
+            //  userId: '{id}',
+            ),
         '/thongtinmuahang': (context) => thong_tin_mua_hang(),
         '/chitietsanpham': (context) => Chitietsp(),
         '/danhsachdon': (context) => QuanLyDonHang(),
         '/chitietdon': (context) => chitietdon(),
         '/donhangcuatoi': (context) => DonHangScreen(),
         '/thanhtoan': (context) => ThanhToan(),
+        '/timkiem': (context) => Timkiemsp(),
       },
     );
   }

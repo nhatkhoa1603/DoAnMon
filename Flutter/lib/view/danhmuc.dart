@@ -1,6 +1,9 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:doanmonhoc/view/taikhoan.dart';
+import 'package:http/http.dart' as http;
+import 'package:doanmonhoc/model/SanPham.dart';
 import 'package:doanmonhoc/view/trangchu.dart';
+import 'package:doanmonhoc/view/taikhoan.dart';
 
 class DanhMuc extends StatefulWidget {
   @override
@@ -9,390 +12,305 @@ class DanhMuc extends StatefulWidget {
 
 class _DanhMucState extends State<DanhMuc> {
   int _selectedIndex = 1;
+  int? selectedBrandId; //theo doi thương hiệu đã chọn
 
-  final List<Map<String, dynamic>> brands = [
-    {'name': 'MacBook', 'image': 'images/brands/macbook.png'},
-    {'name': 'ASUS', 'image': 'images/brands/asus.png'},
-    {'name': 'Lenovo', 'image': 'images/brands/lenovo.png'},
-    {'name': 'Dell', 'image': 'images/brands/dell.png'},
-    {'name': 'Acer', 'image': 'images/brands/acer.png'},
-    {'name': 'LG', 'image': 'images/brands/Lg.png'},
-    {'name': 'HP', 'image': 'images/brands/hp.png'},
-    {'name': 'MSI', 'image': 'images/brands/msi.png'},
+  List<Map<String, dynamic>> brands = [
+    {'icon': Icons.laptop_mac, 'name': 'Asus', 'id': 1},
+    {'icon': Icons.computer, 'name': 'Lenovo', 'id': 2},
+    {'icon': Icons.laptop_chromebook, 'name': 'Apple', 'id': 3},
+    {'icon': Icons.devices, 'name': 'Dell', 'id': 4},
+    {'icon': Icons.apple, 'name': 'Acer', 'id': 5},
+    {'icon': Icons.laptop_chromebook, 'name': 'LG', 'id': 6},
+    {'icon': Icons.devices, 'name': 'HP', 'id': 7},
+    {'icon': Icons.computer, 'name': 'MSI', 'id': 8},
   ];
 
-  final List<Map<String, String>> priceRanges = [
-    {'title': 'Dưới 10 triệu', 'range': '<10000000'},
-    {'title': 'Từ 10-15 triệu', 'range': '10000000-15000000'},
-    {'title': 'Từ 15-25 triệu', 'range': '15000000-25000000'},
-    {'title': 'Từ 25-35 triệu', 'range': '25000000-35000000'},
-  ];
+  List<Sanpham> allSanPhams = []; // Tất cả sản phẩm
+  List<Sanpham> filteredSanPhams = []; // Sẩn phẩm đã lọc
+  bool isLoading = true;
 
-  final List<Map<String, String>> screenSizes = [
-    {'title': '13 inch', 'size': '13'},
-    {'title': '14 inch', 'size': '14'},
-    {'title': '15.6 inch', 'size': '15.6'},
-    {'title': '16 inch', 'size': '16'},
-    {'title': '17 inch', 'size': '17'},
-  ];
-
-  final List<Map<String, dynamic>> usageCategories = [
-    {
-      'title': 'Văn phòng',
-      'image': 'images/categories/office.png',
-      'icon': Icons.business,
-      'color': Color(0xFFE3F2FD),
-    },
-    {
-      'title': 'Gaming',
-      'image': 'images/categories/gaming.png',
-      'icon': Icons.sports_esports,
-      'color': Color(0xFFFCE4EC),
-    },
-    {
-      'title': 'Mỏng nhẹ',
-      'image': 'images/categories/slim.png',
-      'icon': Icons.laptop_mac,
-      'color': Color(0xFFF3E5F5),
-    },
-  ];
-
-  Widget _buildSectionHeader(String title) {
-    return Padding(
-      padding: EdgeInsets.fromLTRB(16, 24, 16, 16),
-      child: Text(
-        title,
-        style: TextStyle(
-          fontSize: 20,
-          fontWeight: FontWeight.bold,
-          color: Colors.black87,
-        ),
-      ),
-    );
+  @override
+  void initState() {
+    super.initState();
+    fetchdsSanPham();
   }
 
-  void _handleCategoryTap(String categoryType, dynamic categoryData) {
-    // You can navigate to a new screen or filter results based on the selected category
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content:
-            Text('Đã chọn ${categoryData['title'] ?? categoryData['name']}'),
-        duration: Duration(seconds: 1),
-      ),
-    );
-    // Add your navigation or filtering logic here
+  // Updated fetch function
+  Future<void> fetchdsSanPham() async {
+    try {
+      final response =
+          await http.get(Uri.parse("https://10.0.2.2:7042/sanPham/danhSach"));
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(response.body)['data'];
+        setState(() {
+          allSanPhams = data.map((value) => Sanpham.fromJson(value)).toList();
+          filteredSanPhams = allSanPhams; // ban đầu sẽ hiển thị tât cả sản phẩm
+          isLoading = false;
+        });
+      } else {
+        throw Exception('Failed to load products');
+      }
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+      print('Error fetching products: $e');
+    }
+  }
+
+  // Add function to filter products by brand
+  void filterProductsByBrand(int brandId) {
+    setState(() {
+      if (selectedBrandId == brandId) {
+        // If clicking the same brand again, show all products
+        selectedBrandId = null;
+        filteredSanPhams = allSanPhams;
+      } else {
+        // Filter products by brand ID
+        selectedBrandId = brandId;
+        filteredSanPhams = allSanPhams
+            .where((product) => product.maThuongHieu == brandId)
+            .toList();
+      }
+    });
+  }
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+
+    if (index == 0) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => TrangChu()),
+      );
+    } else if (index == 2) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => TaiKhoan()),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
       appBar: AppBar(
-        backgroundColor: const Color(0xFF2196F3),
-        elevation: 0,
-        title: Container(
-          height: 40,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(25),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black12,
-                blurRadius: 5,
-                offset: Offset(0, 2),
-              ),
-            ],
-          ),
-          child: TextField(
-            decoration: InputDecoration(
-              prefixIcon: Icon(Icons.search, color: Colors.grey[600]),
-              hintText: 'Bạn cần tìm...',
-              hintStyle: TextStyle(color: Colors.grey[400]),
-              border: InputBorder.none,
-              contentPadding:
-                  EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+        title: Text('Danh Mục Sản Phẩm'),
+        backgroundColor: Colors.blue,
+        automaticallyImplyLeading: false,
+      ),
+      body: ListView(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Text(
+              'Thương hiệu nổi bật',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
           ),
-        ),
-        actions: [
-          Stack(
-            alignment: Alignment.topRight,
-            children: [
-              IconButton(
-                icon: Icon(Icons.shopping_cart, color: Colors.white),
-                onPressed: () {},
-              ),
-              Positioned(
-                right: 8,
-                top: 8,
-                child: Container(
-                  padding: EdgeInsets.all(4),
-                  decoration: BoxDecoration(
-                    color: Colors.yellow,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Text(
-                    '0',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
+          GridView.builder(
+            shrinkWrap: true,
+            physics: NeverScrollableScrollPhysics(),
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 4,
+              mainAxisSpacing: 8,
+              crossAxisSpacing: 8,
+              childAspectRatio: 1,
+            ),
+            itemCount: brands.length,
+            itemBuilder: (context, index) {
+              final brand = brands[index];
+              final isSelected = selectedBrandId == brand['id'];
+              return GestureDetector(
+                onTap: () => filterProductsByBrand(brand['id']),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CircleAvatar(
+                      child: Icon(
+                        brand['icon'],
+                        size: 32,
+                        color: isSelected ? Colors.white : null,
+                      ),
+                      radius: 30,
+                      backgroundColor: isSelected ? Colors.blue : null,
                     ),
-                  ),
+                    SizedBox(height: 8),
+                    Text(
+                      brand['name'],
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight:
+                            isSelected ? FontWeight.bold : FontWeight.normal,
+                        color: isSelected ? Colors.blue : null,
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-            ],
+              );
+            },
+          ),
+          Divider(),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Danh Sách Sản Phẩm',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                if (selectedBrandId != null)
+                  TextButton(
+                    onPressed: () {
+                      setState(() {
+                        selectedBrandId = null;
+                        filteredSanPhams = allSanPhams;
+                      });
+                    },
+                    child: Text('Xem tất cả'),
+                  ),
+              ],
+            ),
+          ),
+          isLoading
+              ? Center(child: CircularProgressIndicator())
+              : GridView.builder(
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    mainAxisSpacing: 12,
+                    crossAxisSpacing: 12,
+                    childAspectRatio: 0.68,
+                  ),
+                  itemCount: filteredSanPhams.length,
+                  itemBuilder: (context, index) {
+                    final product = filteredSanPhams[index];
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.pushNamed(
+                          context,
+                          '/chitietsanpham',
+                          arguments: product.maSanPham,
+                        );
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 4,
+                              offset: Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.vertical(
+                                  top: Radius.circular(12)),
+                              child: Container(
+                                height: 120,
+                                width: double.infinity,
+                                child: Image.network(
+                                  product.hinhAnh,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 8, vertical: 6),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      '${product.tenSanPham}',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    Text(
+                                      "Ram: ${product.Ram}\nCPU: ${product.CPU}",
+                                      style: TextStyle(
+                                        color: Colors.grey[600],
+                                        fontSize: 12,
+                                        height: 1.3,
+                                      ),
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    Text(
+                                      "${product.giaXuat} đ",
+                                      style: TextStyle(
+                                        color: Colors.red,
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            Container(
+                              width: double.infinity,
+                              padding: EdgeInsets.symmetric(vertical: 8),
+                              decoration: BoxDecoration(
+                                color: Colors.blue,
+                                borderRadius: BorderRadius.vertical(
+                                    bottom: Radius.circular(12)),
+                              ),
+                              child: Text(
+                                'Mua ngay',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 13,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+        ],
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
+        type: BottomNavigationBarType.fixed,
+        selectedItemColor: Colors.blue,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Trang chủ',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.category),
+            label: 'Danh mục',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Tài khoản',
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildSectionHeader('Thương hiệu'),
-            _buildBrandsGrid(),
-            _buildSectionHeader('Phân khúc giá'),
-            _buildPriceRanges(),
-            _buildSectionHeader('Kích thước màn hình'),
-            _buildScreenSizes(),
-            _buildSectionHeader('Nhu cầu sử dụng'),
-            _buildUsageCategories(),
-            SizedBox(height: 20),
-          ],
-        ),
-      ),
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black12,
-              blurRadius: 10,
-            ),
-          ],
-        ),
-        child: BottomNavigationBar(
-          currentIndex: _selectedIndex,
-          onTap: _onItemTapped,
-          type: BottomNavigationBarType.fixed,
-          selectedItemColor: Colors.red,
-          unselectedItemColor: Colors.grey,
-          selectedLabelStyle: TextStyle(fontWeight: FontWeight.w600),
-          items: [
-            BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Trang chủ'),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.category), label: 'Danh mục'),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.person), label: 'Tài khoản'),
-          ],
-        ),
-      ),
     );
-  }
-
-  Widget _buildScreenSizes() {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16),
-      child: Wrap(
-        spacing: 10,
-        runSpacing: 10,
-        children: screenSizes.map((size) {
-          return InkWell(
-            onTap: () => _handleCategoryTap('screen_size', size),
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(25),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
-                    blurRadius: 8,
-                    offset: Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Text(
-                size['title']!,
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.black87,
-                ),
-              ),
-            ),
-          );
-        }).toList(),
-      ),
-    );
-  }
-
-  Widget _buildBrandsGrid() {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16),
-      child: GridView.builder(
-        shrinkWrap: true,
-        physics: NeverScrollableScrollPhysics(),
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 4,
-          childAspectRatio: 1.1,
-          crossAxisSpacing: 12,
-          mainAxisSpacing: 12,
-        ),
-        itemCount: brands.length,
-        itemBuilder: (context, index) {
-          return InkWell(
-            onTap: () => _handleCategoryTap('brand', brands[index]),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
-                    blurRadius: 8,
-                    offset: Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Image.asset(
-                    brands[index]['image'],
-                    height: 30,
-                    width: 30,
-                  ),
-                  SizedBox(height: 8),
-                  Text(
-                    brands[index]['name'],
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
-      ),
-    );
-  }
-
-  Widget _buildPriceRanges() {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16),
-      child: Wrap(
-        spacing: 10,
-        runSpacing: 10,
-        children: priceRanges.map((range) {
-          return InkWell(
-            onTap: () => _handleCategoryTap('price_range', range),
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(25),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
-                    blurRadius: 8,
-                    offset: Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Text(
-                range['title']!,
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.black87,
-                ),
-              ),
-            ),
-          );
-        }).toList(),
-      ),
-    );
-  }
-
-  Widget _buildUsageCategories() {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16),
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final itemWidth = (constraints.maxWidth - 24) / 3;
-          return Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: usageCategories.map((category) {
-              return InkWell(
-                onTap: () => _handleCategoryTap('usage', category),
-                child: Container(
-                  width: itemWidth,
-                  padding: EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: category['color'],
-                    borderRadius: BorderRadius.circular(12),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
-                        blurRadius: 8,
-                        offset: Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        category['icon'],
-                        size: 28,
-                        color: Colors.black87,
-                      ),
-                      SizedBox(height: 8),
-                      Text(
-                        category['title'],
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.black87,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            }).toList(),
-          );
-        },
-      ),
-    );
-  }
-
-  void _onItemTapped(int index) {
-    if (index != _selectedIndex) {
-      setState(() {
-        _selectedIndex = index;
-      });
-
-      if (index == 0) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => TrangChu()),
-        );
-      } else if (index == 1) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => DanhMuc()),
-        );
-      } else if (index == 2) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => TaiKhoan()),
-        );
-      }
-    }
   }
 }

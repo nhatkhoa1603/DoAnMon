@@ -4,12 +4,8 @@ import 'package:doanmonhoc/view/donhangsreen.dart';
 import 'package:doanmonhoc/view/login.dart';
 import 'package:doanmonhoc/view/setting.dart';
 import 'package:doanmonhoc/view/thongtincanhan.dart';
-import '../view/thongtincanhan_real.dart';
 import 'package:doanmonhoc/view/trangchu.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import '../model/thongTinCaNhan.dart';
 
 //import '../setting/setting.dart';
 
@@ -19,40 +15,11 @@ class TaiKhoan extends StatefulWidget {
 }
 
 class _TaiKhoanState extends State<TaiKhoan> {
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _phoneController = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-    _thongTinCaNhan();
-  }
-
-
-  Future<void> _thongTinCaNhan() async {
-    final response = await http.get(Uri.parse("https://localhost:7042/khachHang/5"));
-
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      setState(() {
-        final user = thongTinCaNhan.fromJson(data);
-        _nameController.text = user.tenKhachHang;
-        _phoneController.text = user.soDienThoai;
-        _emailController.text = user.email;
-      });
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Không thể tải thông tin người dùng'),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
-  }
-
   int _selectedIndex = 2;
   final Map<String, dynamic> userData = {
+    'name': 'Nguyễn Văn A',
+    'email': 'nguyenvana@email.com',
+    'phone': '0123456789',
     'avatar': 'images/NK.png',
     'membershipLevel': 'Thành viên Vàng',
     'points': 2500,
@@ -124,6 +91,21 @@ class _TaiKhoanState extends State<TaiKhoan> {
     },
   ];
 
+  // void _handleNavigation(String screen, [Map<String, dynamic>? data]) {
+  //   if (screen == 'Cài đặt') {
+  //     Navigator.push(
+  //       context,
+  //       MaterialPageRoute(builder: (context) => CaiDat()),
+  //     );
+  //   } else {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(
+  //         content: Text('Đang chuyển đến: $screen'),
+  //         duration: Duration(seconds: 1),
+  //       ),
+  //     );
+  //   }
+  // }
   void _handleNavigation(String screen, [Map<String, dynamic>? data]) {
     if (screen == 'Cài đặt') {
       Navigator.push(
@@ -147,143 +129,131 @@ class _TaiKhoanState extends State<TaiKhoan> {
   }
 
   Widget _buildUserHeader() {
-  return InkWell(
-    onTap: () => Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => tTinCaNhan()),
-    ),
-    child: Container(
-      padding: EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 5,
-            offset: Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Row(
-            children: [
-              InkWell(
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => PersonalInfoScreen()),  // Chuyển đến màn hình Thông tin cá nhân
+    return InkWell(
+      onTap: () => _handleNavigation('Thông tin cá nhân'),
+      child: Container(
+        padding: EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black12,
+              blurRadius: 5,
+              offset: Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                InkWell(
+                  onTap: () => _handleNavigation('Thay đổi ảnh đại diện'),
+                  child: CircleAvatar(
+                    radius: 30,
+                    backgroundImage: AssetImage(userData['avatar']),
+                  ),
                 ),
-                child: CircleAvatar(
-                  radius: 30,
-                  backgroundImage: AssetImage(userData['avatar']),
-                ),
-              ),
-              SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    InkWell(
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => PersonalInfoScreen()),  // Chuyển đến màn hình Thông tin cá nhân
-                      ),
-                      child: Text(
-                        _nameController.text,
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 4),
-                    Text(
-                     _emailController.text,
-                      style: TextStyle(
-                        color: Colors.grey[600],
-                        fontSize: 14,
-                      ),
-                    ),
-                    SizedBox(height: 4),
-                    InkWell(
-                      onTap: () => _handleNavigation('Thông tin thành viên'),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.star,
-                            size: 16,
-                            color: Colors.amber,
-                          ),
-                          SizedBox(width: 4),
-                          Text(
-                            userData['membershipLevel'],
-                            style: TextStyle(
-                              color: Colors.amber[700],
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              IconButton(
-                  icon: Icon(Icons.edit),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => PersonalInfoScreen()),  // Chuyển đến màn hình Thông tin cá nhân
-                    );
-                  }),
-            ],
-          ),
-          SizedBox(height: 16),
-          InkWell(
-            onTap: () => _handleNavigation('Điểm tích lũy'),
-            child: Container(
-              padding: EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.amber[50],
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
+                SizedBox(width: 16),
+                Expanded(
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Điểm tích lũy',
+                        userData['name'],
                         style: TextStyle(
-                          color: Colors.amber[700],
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                       SizedBox(height: 4),
                       Text(
-                        '${userData['points']} điểm',
+                        userData['email'],
                         style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.amber[700],
+                          color: Colors.grey[600],
+                          fontSize: 14,
+                        ),
+                      ),
+                      SizedBox(height: 4),
+                      InkWell(
+                        onTap: () => _handleNavigation('Thông tin thành viên'),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.star,
+                              size: 16,
+                              color: Colors.amber,
+                            ),
+                            SizedBox(width: 4),
+                            Text(
+                              userData['membershipLevel'],
+                              style: TextStyle(
+                                color: Colors.amber[700],
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],
                   ),
-                  TextButton(
-                    onPressed: () => _handleNavigation('Lịch sử điểm'),
-                    child: Text('Xem lịch sử'),
-                  ),
-                ],
+                ),
+                IconButton(
+                    icon: Icon(Icons.edit),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => PersonalInfoScreen()),
+                      );
+                    }),
+              ],
+            ),
+            SizedBox(height: 16),
+            InkWell(
+              onTap: () => _handleNavigation('Điểm tích lũy'),
+              child: Container(
+                padding: EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.amber[50],
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Điểm tích lũy',
+                          style: TextStyle(
+                            color: Colors.amber[700],
+                          ),
+                        ),
+                        SizedBox(height: 4),
+                        Text(
+                          '${userData['points']} điểm',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.amber[700],
+                          ),
+                        ),
+                      ],
+                    ),
+                    TextButton(
+                      onPressed: () => _handleNavigation('Lịch sử điểm'),
+                      child: Text('Xem lịch sử'),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
 
   Widget _buildOrderStats() {
     return Container(

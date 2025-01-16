@@ -1,23 +1,15 @@
-import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import 'dart:io';
+// lib/screens/login.dart
 
+import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../services/user_service.dart'; // Import the UserService
 import '../Widget/text_field.dart';
+import '../services/user_service.dart';
 import 'sign_up.dart';
 import 'trangchu.dart';
 
-class MyHttpOverrides extends HttpOverrides {
-  @override
-  HttpClient createHttpClient(SecurityContext? context) {
-    return super.createHttpClient(context)
-      ..badCertificateCallback =
-          (X509Certificate cert, String host, int port) => true;
-  }
-}
-
 class LoginApp extends StatefulWidget {
-  const LoginApp({super.key});
+  const LoginApp({Key? key}) : super(key: key);
 
   @override
   State<LoginApp> createState() => _LoginAppState();
@@ -35,34 +27,12 @@ class _LoginAppState extends State<LoginApp> {
     super.dispose();
   }
 
-  Future<Map<String, dynamic>> loginApi(
-      String username, String password) async {
-    try {
-      final response = await http.post(
-        Uri.parse('https://10.0.2.2:7042/taiKhoan/DangNhap'),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'tenDangNhap': username,
-          'MatKhau': password,
-        }),
-      );
-
-      if (response.statusCode == 200) {
-        return jsonDecode(response.body);
-      } else {
-        throw Exception('Lỗi đăng nhập: ${response.statusCode}');
-      }
-    } catch (e) {
-      throw Exception('Lỗi mạng: $e');
-    }
-  }
-
-  void loginUsers() async {
+  Future<void> loginUsers() async {
     final username = usernameController.text.trim();
     final password = passwordController.text.trim();
 
     if (username.isEmpty || password.isEmpty) {
-      showSnackBar(context, "Vui lòng điền đầy đủ thông tin");
+      showSnackBar(context, "Please fill in all fields");
       return;
     }
 
@@ -71,27 +41,52 @@ class _LoginAppState extends State<LoginApp> {
     });
 
     try {
-      final response = await loginApi(username, password);
+      final response =
+          await UserService.login(username, password); // Call the login method
       print('Response data: $response');
 
       if (response['success'] == true) {
-        Navigator.of(context).pushReplacement(
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString('userId', response['maTaiKhoan'].toString());
+        Navigator.pushReplacement(
+          context,
           MaterialPageRoute(
             builder: (context) => TrangChu(),
-            settings: RouteSettings(arguments: response['maTaiKhoan']),
+            settings:
+                RouteSettings(arguments: response['maTaiKhoan'].toString()),
           ),
         );
-        showSnackBar(context, "Đăng nhập thành công!");
+        showSnackBar(context, "Login successful!");
       } else {
-        showSnackBar(context, response['message'] ?? "Đăng nhập thất bại");
+        showSnackBar(context, response['message'] ?? "Login failed");
       }
     } catch (e) {
-      showSnackBar(context, "Lỗi kết nối: $e");
+      showSnackBar(context, "Connection error: $e");
     } finally {
       setState(() {
         isLoading = false;
       });
     }
+  }
+
+  // void checkLoginStatus() async {
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   String? userId = prefs.getString('userId');
+  //   print(userId);
+  //   if (userId != null) {
+  //     Navigator.of(context).pushReplacement(
+  //       MaterialPageRoute(
+  //         builder: (context) => TrangChu(),
+  //         settings: RouteSettings(arguments: userId),
+  //       ),
+  //     );
+  //   }
+  // }
+
+  @override
+  void initState() {
+    super.initState();
+    //checkLoginStatus();
   }
 
   @override
@@ -112,18 +107,18 @@ class _LoginAppState extends State<LoginApp> {
             ),
             TextFieldInput(
               textEditingController: usernameController,
-              hintText: "Nhập tên đăng nhập của bạn",
+              hintText: "Enter your username",
               icon: Icons.person,
             ),
             TextFieldInput(
               isPass: true,
               textEditingController: passwordController,
-              hintText: "Nhập mật khẩu",
+              hintText: "Enter your password",
               icon: Icons.lock,
             ),
             isLoading
                 ? const CircularProgressIndicator()
-                : MyButton(onTap: loginUsers, text: "Đăng nhập"),
+                : MyButton(onTap: loginUsers, text: "Login"),
             const SizedBox(height: 17),
             Row(
               children: [
@@ -146,7 +141,7 @@ class _LoginAppState extends State<LoginApp> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const Text(
-                  "Bạn Chưa Có Tài Khoản ? ",
+                  "Don't have an account? ",
                   style: TextStyle(fontSize: 16),
                 ),
                 GestureDetector(
@@ -159,7 +154,7 @@ class _LoginAppState extends State<LoginApp> {
                     );
                   },
                   child: const Text(
-                    "Đăng Ký Ngay",
+                    "Sign Up",
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,

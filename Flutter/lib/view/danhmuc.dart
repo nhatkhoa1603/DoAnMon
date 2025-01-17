@@ -25,8 +25,8 @@ class _DanhMucState extends State<DanhMuc> {
     {'icon': Icons.computer, 'name': 'MSI', 'id': 8},
   ];
 
-  List<Sanpham> allSanPhams = []; // Tất cả sản phẩm
-  List<Sanpham> filteredSanPhams = []; // Sẩn phẩm đã lọc
+  List<Sanpham> allSanPhams = [];
+  List<Sanpham> filteredSanPhams = [];
   bool isLoading = true;
 
   @override
@@ -35,7 +35,6 @@ class _DanhMucState extends State<DanhMuc> {
     fetchdsSanPham();
   }
 
-  // Updated fetch function
   Future<void> fetchdsSanPham() async {
     try {
       final response =
@@ -44,7 +43,7 @@ class _DanhMucState extends State<DanhMuc> {
         final List<dynamic> data = json.decode(response.body)['data'];
         setState(() {
           allSanPhams = data.map((value) => Sanpham.fromJson(value)).toList();
-          filteredSanPhams = allSanPhams; // ban đầu sẽ hiển thị tât cả sản phẩm
+          filteredSanPhams = allSanPhams;
           isLoading = false;
         });
       } else {
@@ -58,15 +57,12 @@ class _DanhMucState extends State<DanhMuc> {
     }
   }
 
-  // Add function to filter products by brand
   void filterProductsByBrand(int brandId) {
     setState(() {
       if (selectedBrandId == brandId) {
-        // If clicking the same brand again, show all products
         selectedBrandId = null;
         filteredSanPhams = allSanPhams;
       } else {
-        // Filter products by brand ID
         selectedBrandId = brandId;
         filteredSanPhams = allSanPhams
             .where((product) => product.maThuongHieu == brandId)
@@ -99,7 +95,6 @@ class _DanhMucState extends State<DanhMuc> {
       appBar: AppBar(
         title: Text('Danh Mục Sản Phẩm'),
         backgroundColor: Colors.blue,
-        automaticallyImplyLeading: false,
       ),
       body: ListView(
         children: [

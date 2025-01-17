@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import '../model/thongTinCaNhan.dart';
 
 class PersonalInfoScreen extends StatefulWidget {
-  // PersonalInfoScreen({Key? key}) : super(key: key);
+  final String userId;
+
+  PersonalInfoScreen({Key? key, required this.userId}) : super(key: key);
 
   @override
   _PersonalInfoScreenState createState() => _PersonalInfoScreenState();
@@ -17,6 +20,7 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _diaChiController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
+  bool isLoading = false;
 
   @override
   void initState() {
@@ -24,31 +28,71 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
     _fetchUserInfo();
   }
 
+  Future<String?> _getuserId() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('userId');
+  }
+
   Future<void> _fetchUserInfo() async {
-    final url = Uri.parse("https://10.0.2.2.com/khachHang/${1}");
+    setState(() {
+      isLoading = true; // Show loading indicator
+    });
+
+    String? userId = await _getuserId();
+    if (userId == null) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Vui lòng đăng nhập lại!')),
+        );
+      }
+      setState(() {
+        isLoading = false;
+      });
+      return;
+    }
+
+    final url = Uri.parse("https://10.0.2.2:7042/khachHang/$userId");
     try {
       final response = await http.get(url);
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        setState(() {
-          final user = thongTinCaNhan.fromJson(data);
-          _nameController.text = user.tenKhachHang;
-          _selectedGender = user.gioiTinh;
-          _phoneController.text = user.soDienThoai;
-          _diaChiController.text = user.diaChi ?? "";
-          _emailController.text = user.email;
-        });
+
+        if (data != null && data.isNotEmpty) {
+          setState(() {
+            final user = thongTinCaNhan.fromJson(data);
+            _nameController.text = user.tenKhachHang ?? '';
+            _selectedGender = user.gioiTinh ?? '';
+            _phoneController.text = user.soDienThoai ?? '';
+            _diaChiController.text = user.diaChi ?? '';
+            _emailController.text = user.email ?? '';
+          });
+        } else {
+          _showErrorSnackBar('Không có dữ liệu người dùng.');
+        }
       } else {
         _showErrorSnackBar(
             'Không thể tải thông tin người dùng. Mã lỗi: ${response.statusCode}');
       }
     } catch (e) {
       _showErrorSnackBar('Có lỗi xảy ra khi tải thông tin người dùng.');
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
   Future<void> _updateUserInfo() async {
-    final url = Uri.parse("https://10.0.2.2.com/khachHang/Sua/${1}");
+    String? userId = await _getuserId();
+    if (userId == null) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Vui lòng đăng nhập lại!')),
+        );
+      }
+      return;
+    }
+    final url = Uri.parse("https://10.0.2.2:7042/khachHang/Sua/$userId");
     final updatedUser = {
       "tenKhachHang": _nameController.text.trim(),
       "gioiTinh": _selectedGender,
@@ -146,19 +190,25 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
               _buildTextField(_emailController, 'Email', Icons.email,
                   validator: _validateEmail),
               const SizedBox(height: 24),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton.icon(
-                  icon: const Icon(Icons.save, color: Colors.white),
-                  label: const Text('Lưu thông tin',
-                      style: TextStyle(fontSize: 16)),
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      _updateUserInfo();
-                    }
-                  },
-                ),
-              ),
+              isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        icon: const Icon(Icons.save, color: Colors.white),
+                        label: const Text('Lưu thông tin',
+                            style:
+                                TextStyle(fontSize: 16, color: Colors.white)),
+                        onPressed: () {
+                          if (_formKey.currentState!.validate()) {
+                            _updateUserInfo();
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue,
+                        ),
+                      ),
+                    ),
             ],
           ),
         ),

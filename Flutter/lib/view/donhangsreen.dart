@@ -1,4 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
+import '../model/hoaDon.dart';
 
 class DonHangScreen extends StatefulWidget {
   @override
@@ -6,59 +11,108 @@ class DonHangScreen extends StatefulWidget {
 }
 
 class _DonHangScreenState extends State<DonHangScreen> {
+  List<Hoadon> dsHoaDon = [];
   String _selectedStatus = 'Tất cả';
-  
-  // Sample order data
-  final List<Map<String, dynamic>> orders = [
-    {
-      'id': 'DH001',
-      'date': '2025-01-10',
-      'status': 'Chờ xác nhận',
-      'total': 1250000,
-      'items': [
-        {
-          'name': 'Sản phẩm A',
-          'quantity': 2,
-          'price': 500000,
-        },
-        {
-          'name': 'Sản phẩm B',
-          'quantity': 1,
-          'price': 250000,
-        },
-      ],
-    },
-    {
-      'id': 'DH002',
-      'date': '2025-01-09',
-      'status': 'Đang giao',
-      'total': 800000,
-      'items': [
-        {
-          'name': 'Sản phẩm C',
-          'quantity': 1,
-          'price': 800000,
-        },
-      ],
-    },
-  ];
+  bool isLoading = false;
 
-  List<String> orderStatuses = [
-    'Tất cả',
-    'Chờ xác nhận',
-    'Đang giao',
-    'Đã giao',
-    'Đã hủy'
-  ];
-
-  List<Map<String, dynamic>> getFilteredOrders() {
-    if (_selectedStatus == 'Tất cả') {
-      return orders;
-    }
-    return orders.where((order) => order['status'] == _selectedStatus).toList();
+  Future<String?> _getuserId() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('userId');
   }
 
-  void _showOrderDetail(Map<String, dynamic> order) {
+  Future<void> fetchDSDon() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    String? userId = await _getuserId();
+    if (userId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Vui lòng đăng nhập lại!')),
+      );
+      setState(() {
+        isLoading = false;
+      });
+      return;
+    }
+
+    final url =
+        Uri.parse("https://10.0.2.2:7042/hoaDonKhachHang/danhSach/$userId");
+    try {
+      final response = await http.get(url);
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(response.body)['data'];
+        setState(() {
+          dsHoaDon = data.map((value) => Hoadon.fromJson(value)).toList();
+        });
+      } else {
+        _showErrorSnackBar(
+            'Không thể tải thông tin người dùng. Mã lỗi: ${response.statusCode}');
+      }
+    } catch (e) {
+      _showErrorSnackBar('Có lỗi xảy ra khi tải thông tin người dùng.');
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  List<Hoadon> getFilteredOrders() {
+    if (_selectedStatus == 'Tất cả') {
+      return dsHoaDon;
+    }
+    return dsHoaDon.where((order) {
+      String statusText;
+      switch (order.trangThai) {
+        case 0:
+          statusText = 'Đã hủy';
+          break;
+        case 2:
+          statusText = 'Đang giao';
+          break;
+        case 3:
+          statusText = 'Đã giao';
+          break;
+        default:
+          statusText = 'Chờ xác nhận';
+      }
+      return statusText == _selectedStatus;
+    }).toList();
+  }
+
+  void _showErrorSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.red,
+      ),
+    );
+  }
+
+  Future<void> huyDon(int maDonHang) async {
+    String? userId = await _getuserId();
+    if (userId == null) {
+      _showErrorSnackBar('Vui lòng đăng nhập lại!');
+      return;
+    }
+
+    final url = Uri.parse("https://10.0.2.2:7042/hoaDon/huyDon/$maDonHang");
+    final response = await http.put(url, body: {'userId': userId});
+
+    if (response.statusCode == 200) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Hủy đơn thành công')),
+      );
+      setState(() {
+        dsHoaDon.removeWhere((order) => order.maDonHang == maDonHang);
+      });
+    } else {
+      _showErrorSnackBar('Không thể hủy đơn. Mã lỗi: ${response.statusCode}');
+    }
+  }
+
+  void _showOrderDetail(Hoadon order) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -79,7 +133,7 @@ class _DonHangScreenState extends State<DonHangScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Chi tiết đơn hàng ${order['id']}',
+                    'Mã hóa đơn: ${order.maDonHang}',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -93,89 +147,30 @@ class _DonHangScreenState extends State<DonHangScreen> {
               ),
               Divider(),
               Text(
-                'Ngày đặt: ${order['date']}',
+                'Ngày đặt: ${order.ngayDatHang}',
                 style: TextStyle(fontSize: 16),
               ),
               SizedBox(height: 8),
               Text(
-                'Trạng thái: ${order['status']}',
+                'Trạng thái: ${order.trangThai == 3 ? "Đã giao" : order.trangThai == 0 ? "Đã hủy" : order.trangThai == 2 ? "Đang giao" : "Chờ xác nhận"}',
                 style: TextStyle(
                   fontSize: 16,
-                  color: order['status'] == 'Chờ xác nhận' ? Colors.orange : Colors.blue,
+                  color: order.trangThai == 3
+                      ? Colors.greenAccent
+                      : order.trangThai == 0
+                          ? Colors.red
+                          : order.trangThai == 2
+                              ? Colors.lightBlue
+                              : Colors.orange,
                 ),
               ),
               SizedBox(height: 16),
-              Text(
-                'Sản phẩm:',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Expanded(
-                child: ListView.builder(
-                  controller: controller,
-                  itemCount: order['items'].length,
-                  itemBuilder: (context, index) {
-                    final item = order['items'][index];
-                    return ListTile(
-                      title: Text(item['name']),
-                      subtitle: Text('Số lượng: ${item['quantity']}'),
-                      trailing: Text(
-                        '${item['price']} đ',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-              Divider(),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Tổng tiền:',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Text(
-                    '${order['total']} đ',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.blue,
-                    ),
-                  ),
-                ],
-              ),
-              if (order['status'] == 'Chờ xác nhận')
-                Padding(
-                  padding: const EdgeInsets.only(top: 16),
-                  child: SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red,
-                        padding: EdgeInsets.symmetric(vertical: 12),
-                      ),
-                      onPressed: () {
-                        // Implement order cancellation logic here
-                        Navigator.pop(context);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('Đơn hàng đã được hủy'),
-                          ),
-                        );
-                      },
-                      child: Text(
-                        'Hủy đơn hàng',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                    ),
+              if (order.trangThai == 1)
+                ElevatedButton(
+                  onPressed: () => huyDon(order.maDonHang),
+                  child: Text('Hủy Đơn'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
                   ),
                 ),
             ],
@@ -186,9 +181,15 @@ class _DonHangScreenState extends State<DonHangScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    fetchDSDon();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final filteredOrders = getFilteredOrders();
-    
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Đơn hàng của tôi'),
@@ -203,11 +204,23 @@ class _DonHangScreenState extends State<DonHangScreen> {
             padding: EdgeInsets.symmetric(vertical: 8),
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
-              itemCount: orderStatuses.length,
+              itemCount: [
+                'Tất cả',
+                'Chờ xác nhận',
+                'Đang giao',
+                'Đã giao',
+                'Đã hủy'
+              ].length,
               itemBuilder: (context, index) {
-                final status = orderStatuses[index];
+                final status = [
+                  'Tất cả',
+                  'Chờ xác nhận',
+                  'Đang giao',
+                  'Đã giao',
+                  'Đã hủy'
+                ][index];
                 final isSelected = status == _selectedStatus;
-                
+
                 return Padding(
                   padding: EdgeInsets.symmetric(horizontal: 4),
                   child: FilterChip(
@@ -218,7 +231,8 @@ class _DonHangScreenState extends State<DonHangScreen> {
                         _selectedStatus = status;
                       });
                     },
-                    backgroundColor: isSelected ? Colors.blue : Colors.grey[200],
+                    backgroundColor:
+                        isSelected ? Colors.blue : Colors.grey[200],
                     labelStyle: TextStyle(
                       color: isSelected ? Colors.white : Colors.black87,
                     ),
@@ -236,52 +250,39 @@ class _DonHangScreenState extends State<DonHangScreen> {
                     itemCount: filteredOrders.length,
                     itemBuilder: (context, index) {
                       final order = filteredOrders[index];
-                      return Card(
-                        margin: EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 8,
-                        ),
-                        child: InkWell(
-                          onTap: () => _showOrderDetail(order),
+                      return InkWell(
+                        onTap: () => _showOrderDetail(order),
+                        child: Card(
+                          margin: EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 8,
+                          ),
                           child: Padding(
                             padding: EdgeInsets.all(16),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text(
-                                      'Đơn hàng ${order['id']}',
+                                      'Đơn hàng ${order.maDonHang}',
                                       style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
                                     Text(
-                                      order['status'],
+                                      '${order.trangThai == 3 ? "Hoàn thành" : order.trangThai == 0 ? "Đã hủy" : order.trangThai == 2 ? "Đang giao" : "Chờ xác nhận"}',
                                       style: TextStyle(
-                                        color: order['status'] == 'Chờ xác nhận'
-                                            ? Colors.orange
-                                            : Colors.blue,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                SizedBox(height: 8),
-                                Text('Ngày đặt: ${order['date']}'),
-                                SizedBox(height: 8),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      '${order['items'].length} sản phẩm',
-                                      style: TextStyle(color: Colors.grey[600]),
-                                    ),
-                                    Text(
-                                      '${order['total']} đ',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.blue,
+                                        fontSize: 16,
+                                        color: order.trangThai == 3
+                                            ? Colors.greenAccent
+                                            : order.trangThai == 0
+                                                ? Colors.red
+                                                : order.trangThai == 2
+                                                    ? Colors.lightBlue
+                                                    : Colors.orange,
                                       ),
                                     ),
                                   ],

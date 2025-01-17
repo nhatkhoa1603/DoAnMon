@@ -40,7 +40,6 @@ class _ThanhToanState extends State<ThanhToan> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                // Card number field
                 TextFormField(
                   controller: _cardNumberController,
                   decoration: InputDecoration(
@@ -59,7 +58,6 @@ class _ThanhToanState extends State<ThanhToan> {
                   },
                 ),
                 const SizedBox(height: 16),
-                // Expiry date and CVV
                 Row(
                   children: [
                     Expanded(
@@ -119,7 +117,6 @@ class _ThanhToanState extends State<ThanhToan> {
                   },
                 ),
                 const SizedBox(height: 32),
-                // Payment amount
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
@@ -148,7 +145,6 @@ class _ThanhToanState extends State<ThanhToan> {
                   ),
                 ),
                 const SizedBox(height: 32),
-                // Pay button
                 SizedBox(
                   width: double.infinity,
                   height: 50,
@@ -182,7 +178,6 @@ class _ThanhToanState extends State<ThanhToan> {
   }
 
   void _processPayment(BuildContext context) {
-    // Show loading indicator
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -191,11 +186,8 @@ class _ThanhToanState extends State<ThanhToan> {
       ),
     );
 
-    // Simulate payment processing
     Future.delayed(const Duration(seconds: 2), () {
-      Navigator.pop(context); // Remove loading indicator
-
-      // Navigate to success screen
+      Navigator.pop(context);
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -215,7 +207,6 @@ class _ThanhToanState extends State<ThanhToan> {
   }
 }
 
-// Payment Success Screen
 class PaymentSuccessScreen extends StatelessWidget {
   const PaymentSuccessScreen({Key? key}) : super(key: key);
 

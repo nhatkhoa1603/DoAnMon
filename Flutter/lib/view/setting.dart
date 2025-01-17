@@ -1,3 +1,4 @@
+import 'package:doanmonhoc/view/doimatkhau.dart';
 import 'package:flutter/material.dart';
 
 class CaiDat extends StatefulWidget {
@@ -131,7 +132,14 @@ class _CaiDatState extends State<CaiDat> {
                   title: Text('Đổi mật khẩu'),
                   trailing: Icon(Icons.arrow_forward_ios, size: 16),
                   onTap: () {
-                    // TODO: Implement password change logic
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ChangePasswordScreen(
+                          userId: '{userId}',
+                        ),
+                      ),
+                    );
                   },
                 ),
                 SwitchListTile(
@@ -160,16 +168,12 @@ class _CaiDatState extends State<CaiDat> {
                 ListTile(
                   title: Text('Điều khoản sử dụng'),
                   trailing: Icon(Icons.arrow_forward_ios, size: 16),
-                  onTap: () {
-                    // TODO: Navigate to Terms of Service
-                  },
+                  onTap: () {},
                 ),
                 ListTile(
                   title: Text('Chính sách bảo mật'),
                   trailing: Icon(Icons.arrow_forward_ios, size: 16),
-                  onTap: () {
-                    // TODO: Navigate to Privacy Policy
-                  },
+                  onTap: () {},
                 ),
               ],
             ),

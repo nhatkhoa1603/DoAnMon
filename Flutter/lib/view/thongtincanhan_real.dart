@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import '../model/thongTinCaNhan.dart';
 import '../view/thongtincanhan.dart';
@@ -26,9 +27,24 @@ class _tTinCaNhan extends State<tTinCaNhan> {
     _fetchUserInfo();
   }
 
+  Future<String?> _getuserId() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('userId');
+  }
+
   Future<void> _fetchUserInfo() async {
-    final response = await http
-        .get(Uri.parse("https://10.0.2.2:7042/khachHang/${widget.userId}"));
+    String? userId = await _getuserId();
+    if (userId == null) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Vui lòng đăng nhập lại!')),
+        );
+      }
+
+      return;
+    }
+    final response =
+        await http.get(Uri.parse("https://10.0.2.2:7042/khachHang/$userId"));
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
@@ -109,8 +125,8 @@ class _tTinCaNhan extends State<tTinCaNhan> {
             context,
             MaterialPageRoute(
               builder: (context) => PersonalInfoScreen(
-                  //userId: '{id}',
-                  ),
+                userId: '{id}',
+              ),
             ),
           );
         },

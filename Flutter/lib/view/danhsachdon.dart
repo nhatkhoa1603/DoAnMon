@@ -150,7 +150,6 @@ class _QuanLyDonHangState extends State<QuanLyDonHang> {
               ],
             ),
             const SizedBox(height: 10),
-            // Danh sách đơn hàng
             Expanded(
               child: ListView.builder(
                 itemCount: hoaDons.length,
@@ -166,7 +165,6 @@ class _QuanLyDonHangState extends State<QuanLyDonHang> {
                       child: Row(
                         children: [
                           const SizedBox(width: 10),
-                          // Thông tin đơn hàng
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -196,7 +194,6 @@ class _QuanLyDonHangState extends State<QuanLyDonHang> {
                               ],
                             ),
                           ),
-                          // Nút hành động
                           Column(
                             children: [
                               IconButton(
@@ -222,14 +219,12 @@ class _QuanLyDonHangState extends State<QuanLyDonHang> {
                                               actions: [
                                                 TextButton(
                                                   onPressed: () {
-                                                    Navigator.of(context)
-                                                        .pop(); // Đóng dialog
+                                                    Navigator.of(context).pop();
                                                   },
                                                   child: Text("Hủy"),
                                                 ),
                                                 ElevatedButton(
                                                   onPressed: () async {
-                                                    // Thực hiện cập nhật thông tin
                                                     duyetDon(
                                                         context,
                                                         hoaDons[index]

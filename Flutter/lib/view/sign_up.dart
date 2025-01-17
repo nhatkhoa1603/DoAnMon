@@ -48,7 +48,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
       isLoading = true;
     });
 
-    // Validate inputs
     if (username.isEmpty ||
         name.isEmpty ||
         gender == null ||
@@ -115,7 +114,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
       print('KhachHang Response status: ${responseKhachHang.statusCode}');
       print('KhachHang Response body: ${responseKhachHang.body}');
 
-      // Send request to TaiKhoan/Them
       final responseTaiKhoan = await http.post(
         Uri.parse('https://10.0.2.2:7042/TaiKhoan/Them'),
         headers: {'Content-Type': 'application/json'},
@@ -129,7 +127,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
       print('TaiKhoan Response status: ${responseTaiKhoan.statusCode}');
       print('TaiKhoan Response body: ${responseTaiKhoan.body}');
 
-      // Handle responses
       if (responseKhachHang.statusCode == 200 &&
           responseTaiKhoan.statusCode == 200) {
         final responseDataKhachHang = jsonDecode(responseKhachHang.body);
@@ -196,7 +193,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
               icon: Icons.person,
             ),
             const SizedBox(height: 10),
-            // Gender Dropdown
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 20),
               padding: const EdgeInsets.symmetric(horizontal: 15),

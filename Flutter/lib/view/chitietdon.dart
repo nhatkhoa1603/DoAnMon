@@ -108,15 +108,14 @@ class _chitietdonState extends State<chitietdon> {
               SizedBox(height: 8),
               ListTile(
                 leading: CircleAvatar(
-                  backgroundImage:
-                      NetworkImage('https://via.placeholder.com/150'),
+                  backgroundImage: NetworkImage(
+                      'https://static.vecteezy.com/system/resources/previews/014/194/215/original/avatar-icon-human-a-person-s-badge-social-media-profile-symbol-the-symbol-of-a-person-vector.jpg'),
                 ),
                 title: Text(hoaDon.tenKhachHang),
                 subtitle: Text(hoaDon.soDienThoai),
               ),
               Divider(),
 
-              // Thông tin đơn hàng (Danh sách sản phẩm)
               Text(
                 "Thông tin đơn hàng",
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -138,7 +137,6 @@ class _chitietdonState extends State<chitietdon> {
               ),
               Divider(),
 
-              // Trạng thái đơn hàng
               Text(
                 "Trạng thái đơn hàng",
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -180,7 +178,6 @@ class _chitietdonState extends State<chitietdon> {
               ),
               Divider(),
 
-              // Tổng cộng
               Text(
                 "Tổng cộng",
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -189,7 +186,6 @@ class _chitietdonState extends State<chitietdon> {
               TotalPriceCard(orderItems: chiTietdons),
               Divider(),
 
-              // Các nút hành độngs
               SizedBox(height: 16),
               hoaDon.trangThai == 1
                   ? ElevatedButton(
@@ -280,7 +276,6 @@ class OrderItemCard extends StatelessWidget {
                   SizedBox(height: 8),
                   Text("Số lượng: ${item.soLuong}"),
                   SizedBox(height: 8),
-                  // Các nút điều chỉnh số lượng
                   Row(
                     children: [
                       IconButton(

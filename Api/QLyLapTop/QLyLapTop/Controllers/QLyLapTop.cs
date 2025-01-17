@@ -81,7 +81,6 @@ namespace QLyLapTop.Controllers
             return Ok(new { success = true, data = tasks });
         }
 
-
         [HttpPut]
         [Route("/khachHang/Sua/{id}")]
         public ActionResult Update(int id, KhachHang obj)
@@ -116,7 +115,6 @@ namespace QLyLapTop.Controllers
                     return BadRequest(new { success = false, message = "Đăng ký thất bại", errors = new[] { "Dữ liệu khách hàng không được để trống!" } });
                 }
 
-                // Kiểm tra các trường bắt buộc
                 if (string.IsNullOrWhiteSpace(obj.TenKhachHang))
                 {
                     errors.Add("Tên khách hàng không được để trống!");
@@ -132,7 +130,6 @@ namespace QLyLapTop.Controllers
                     errors.Add("Số điện thoại không được để trống!");
                 }
 
-                // Kiểm tra định dạng email nếu có giá trị
                 if (!string.IsNullOrWhiteSpace(obj.Email))
                 {
                     var emailRegex = new System.Text.RegularExpressions.Regex(@"^[^\s@]+@[^\s@]+\.[^\s@]+$");
@@ -146,7 +143,6 @@ namespace QLyLapTop.Controllers
                     }
                 }
 
-                // Kiểm tra số điện thoại nếu có giá trị
                 if (!string.IsNullOrWhiteSpace(obj.SoDienThoai))
                 {
                     if (!System.Text.RegularExpressions.Regex.IsMatch(obj.SoDienThoai, @"^\d+$"))
@@ -159,13 +155,11 @@ namespace QLyLapTop.Controllers
                     }
                 }
 
-                // Nếu có bất kỳ lỗi nào, trả về BadRequest với danh sách lỗi
                 if (errors.Any())
                 {
                     return BadRequest(new { success = false, message = "Đăng ký thất bại", errors });
                 }
 
-                // Nếu không có lỗi, tiếp tục xử lý
                 obj.GioiTinh ??= "Không xác định";
                 obj.TrangThai ??= 1;
 
@@ -200,7 +194,6 @@ namespace QLyLapTop.Controllers
                     return BadRequest(new { success = false, message = "Đăng ký thất bại", errors = new[] { "Dữ liệu tài khoản không được để trống!" } });
                 }
 
-                // Kiểm tra các trường bắt buộc
                 if (string.IsNullOrWhiteSpace(obj.TenDangNhap))
                 {
                     errors.Add("Tên đăng nhập không được để trống!");
@@ -215,19 +208,16 @@ namespace QLyLapTop.Controllers
                     errors.Add("Mật khẩu phải có ít nhất 6 ký tự!");
                 }
 
-                // Kiểm tra tên đăng nhập đã tồn tại nếu có giá trị
                 if (!string.IsNullOrWhiteSpace(obj.TenDangNhap) && dbc.TaiKhoans.Any(kt => kt.TenDangNhap == obj.TenDangNhap))
                 {
                     errors.Add("Tên đăng nhập đã tồn tại!");
                 }
 
-                // Nếu có bất kỳ lỗi nào, trả về BadRequest với danh sách lỗi
                 if (errors.Any())
                 {
                     return BadRequest(new { success = false, message = "Đăng ký thất bại", errors });
                 }
 
-                // Nếu không có lỗi, tiếp tục xử lý
                 obj.TrangThai ??= 1;
 
                 dbc.TaiKhoans.Add(obj);
@@ -251,17 +241,34 @@ namespace QLyLapTop.Controllers
 
         [HttpPost]
         [Route("/taiKhoan/DangNhap")]
-        public async Task<IActionResult> DangNhap( TaiKhoan obj)
+        public async Task<IActionResult> DangNhap(TaiKhoan obj)
         {
-            var taiKhoan = await dbc.TaiKhoans
-                .FirstOrDefaultAsync(t => t.TenDangNhap == obj.TenDangNhap && t.MatKhau == obj.MatKhau );
 
-            if (taiKhoan == null )
+            var taiKhoan = await dbc.TaiKhoans
+                .FirstOrDefaultAsync(t => t.TenDangNhap == obj.TenDangNhap && t.MatKhau == obj.MatKhau);
+
+            if (taiKhoan == null)
             {
-                return Unauthorized(new { success = false, Message = "Tên đăng nhập hoặc mật khẩu không đúng." });
+                return Unauthorized(new { success = false, message = "Tên đăng nhập hoặc mật khẩu không hợp lệ." });
             }
 
-            return Ok(new { success = true, Message = "Đăng nhập thành công!", data = taiKhoan });
+            if (taiKhoan.TrangThai == null || taiKhoan.TrangThai == 0)
+            {
+                return Unauthorized(new { success = false, message = "Tài khoản của bạn đã bị vô hiệu hóa." });
+            }
+
+            return Ok(new
+            {
+                success = true,
+                message = "Đăng nhập thành công!",
+                maTaiKhoan = taiKhoan.MaTaiKhoan, 
+                taiKhoan = new
+                {
+                    taiKhoan.MaTaiKhoan,
+                    taiKhoan.TenDangNhap,
+                    taiKhoan.TrangThai
+                }
+            });
         }
 
 
@@ -302,7 +309,7 @@ namespace QLyLapTop.Controllers
                         {
                             hd.MaDonHang,
                             NgayDatHang = hd.NgayDatHang.HasValue
-                        ? hd.NgayDatHang.Value.ToString("yyyy-MM-dd") // Chỉ lấy ngày, tháng, năm
+                        ? hd.NgayDatHang.Value.ToString("yyyy-MM-dd") 
                         : null,
                             hd.PhiVanChuyen,
                             hd.TrangThai,
@@ -333,7 +340,7 @@ namespace QLyLapTop.Controllers
                         {
                             hd.MaDonHang,
                             NgayDatHang = hd.NgayDatHang.HasValue
-                        ? hd.NgayDatHang.Value.ToString("yyyy-MM-dd") // Chỉ lấy ngày, tháng, năm
+                        ? hd.NgayDatHang.Value.ToString("yyyy-MM-dd") 
                         : null,
                             hd.PhiVanChuyen,
                             hd.TrangThai,
@@ -363,8 +370,8 @@ namespace QLyLapTop.Controllers
         {
             try
             {
-                var hoadon = dbc.HoaDons
-                .Where(sp => sp.MaKhachHang == makhachHang).ToList();
+                var hoadon = await dbc.HoaDons
+                .Where(sp => sp.MaKhachHang ==  makhachHang).ToListAsync();
                 if (hoadon == null)
                 {
                     return NotFound(new { success = false, message = $"khong tim thay trang thai: {makhachHang}!" });
@@ -491,7 +498,6 @@ namespace QLyLapTop.Controllers
                     return NotFound(new { message = "Chi tiết hóa đơn không tồn tại." });
                 }
 
-                // Cập nhật số lượng và tính lại thành tiền nếu cần
                 chiTietHoaDon.SoLuong = soLuongMoi;
 
                 await dbc.SaveChangesAsync();
@@ -517,10 +523,10 @@ namespace QLyLapTop.Controllers
 
             if (gioHangs == null || gioHangs.Count == 0)
             {
-                return NotFound(); // Trả về 404 nếu không tìm thấy dữ liệu
+                return NotFound(); 
             }
 
-            return Ok(gioHangs); // Trả về dữ liệu nếu tìm thấy
+            return Ok(gioHangs); 
         }
 
         [HttpPost]
@@ -529,7 +535,7 @@ namespace QLyLapTop.Controllers
         {
             try
             {
-                // Kiểm tra xem khách hàng và sản phẩm có tồn tại trong giỏ hàng hay chưa
+                
                 var existingItem = dbc.GioHangs
                     .FirstOrDefault(g => g.MaKhachHang == obj.MaKhachHang && g.MaSanPham == obj.MaSanPham);
 
@@ -539,11 +545,9 @@ namespace QLyLapTop.Controllers
                 }
                 else
                 {
-                    // Nếu sản phẩm chưa có trong giỏ hàng, thêm mới vào giỏ hàng
-                    obj.TrangThai = 1; // Gán trạng thái cho giỏ hàng (ví dụ: 1 = Đang xử lý)
+                   
+                    obj.TrangThai = 1; 
                     dbc.GioHangs.Add(obj);
-
-                    // Lưu thay đổi vào cơ sở dữ liệu
                     dbc.SaveChanges();
 
                     return Ok(new { success = true, message = "Thêm vào giỏ hàng thành công!" });
@@ -551,7 +555,6 @@ namespace QLyLapTop.Controllers
             }
             catch (Exception ex)
             {
-                // Log error details (optional)
                 Console.WriteLine($"Error: {ex.Message}");
                 if (ex.InnerException != null)
                 {
@@ -572,7 +575,7 @@ namespace QLyLapTop.Controllers
 
             if (gioHang == null)
             {
-                return NotFound(new { success = false, message = $"khong tim thay san pham voi ID: {maSP}!" }); // Trả về 404 nếu không tìm thấy dữ liệu
+                return NotFound(new { success = false, message = $"khong tim thay san pham voi ID: {maSP}!" }); 
             }
 
             gioHang.SoLuong = obj.SoLuong;
@@ -592,7 +595,7 @@ namespace QLyLapTop.Controllers
 
             if (gioHang == null)
             {
-                return NotFound(new { success = false, message = $"khong tim thay san pham voi ID: {maSP}!" }); // Trả về 404 nếu không tìm thấy dữ liệu
+                return NotFound(new { success = false, message = $"khong tim thay san pham voi ID: {maSP}!" }); 
             }
 
             gioHang.TrangThai = 0;

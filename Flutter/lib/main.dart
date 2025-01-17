@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'package:provider/provider.dart';
+import 'package:doanmonhoc/model/gioHang.dart';
 
 import 'package:doanmonhoc/view/chitietdon.dart';
 import 'package:doanmonhoc/view/danhmuc.dart';
@@ -34,7 +36,12 @@ class MyHttpOverrides extends HttpOverrides {
 
 void main() {
   HttpOverrides.global = MyHttpOverrides();
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => CartProvider(),
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -54,7 +61,7 @@ class MyApp extends StatelessWidget {
         '/giohang': (context) => Giohang(),
         '/caidat': (context) => CaiDat(),
         '/chinhsuattcanhan': (context) => PersonalInfoScreen(
-            //  userId: '{id}',
+              userId: '{id}',
             ),
         '/thongtinmuahang': (context) => thong_tin_mua_hang(),
         '/chitietsanpham': (context) => Chitietsp(),
@@ -63,6 +70,7 @@ class MyApp extends StatelessWidget {
         '/donhangcuatoi': (context) => DonHangScreen(),
         '/thanhtoan': (context) => ThanhToan(),
         '/timkiem': (context) => Timkiemsp(),
+        '/thongtincanhan': (context) => tTinCaNhan(userId: '{id}'),
       },
     );
   }

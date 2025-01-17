@@ -1,13 +1,16 @@
-//import 'package:doanmonhoc/LoginSignin/login.dart';
+import 'dart:convert';
+import 'package:doanmonhoc/view/setting.dart';
+import 'package:doanmonhoc/view/thongtincanhan_real.dart';
+import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
 import 'package:doanmonhoc/view/danhmuc.dart';
 import 'package:doanmonhoc/view/donhangsreen.dart';
 import 'package:doanmonhoc/view/login.dart';
-import 'package:doanmonhoc/view/setting.dart';
 import 'package:doanmonhoc/view/thongtincanhan.dart';
 import 'package:doanmonhoc/view/trangchu.dart';
-import 'package:flutter/material.dart';
 
-//import '../setting/setting.dart';
+import '../model/thongTinCaNhan.dart';
 
 class TaiKhoan extends StatefulWidget {
   @override
@@ -15,11 +18,13 @@ class TaiKhoan extends StatefulWidget {
 }
 
 class _TaiKhoanState extends State<TaiKhoan> {
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
   int _selectedIndex = 2;
+  bool _isLoading = true;
+
   final Map<String, dynamic> userData = {
-    'name': 'Nguyễn Văn A',
-    'email': 'nguyenvana@email.com',
-    'phone': '0123456789',
     'avatar': 'images/NK.png',
     'membershipLevel': 'Thành viên Vàng',
     'points': 2500,
@@ -91,44 +96,87 @@ class _TaiKhoanState extends State<TaiKhoan> {
     },
   ];
 
-  // void _handleNavigation(String screen, [Map<String, dynamic>? data]) {
-  //   if (screen == 'Cài đặt') {
-  //     Navigator.push(
-  //       context,
-  //       MaterialPageRoute(builder: (context) => CaiDat()),
-  //     );
-  //   } else {
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       SnackBar(
-  //         content: Text('Đang chuyển đến: $screen'),
-  //         duration: Duration(seconds: 1),
-  //       ),
-  //     );
-  //   }
-  // }
+  @override
+  void initState() {
+    super.initState();
+    _thongTinCaNhan();
+  }
+
+  Future<String?> _getuserId() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('userId');
+  }
+
+  Future<void> _thongTinCaNhan() async {
+    try {
+      String? userId = await _getuserId();
+      if (userId == null) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Vui lòng đăng nhập lại!')),
+          );
+        }
+        return;
+      }
+
+      final response =
+          await http.get(Uri.parse("https://10.0.2.2:7042/khachHang/$userId"));
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (mounted) {
+          setState(() {
+            final user = thongTinCaNhan.fromJson(data);
+            _nameController.text = user.tenKhachHang;
+            _phoneController.text = user.soDienThoai;
+            _emailController.text = user.email;
+            _isLoading = false;
+          });
+        }
+      } else {
+        throw Exception('Không thể tải dữ liệu người dùng');
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Lỗi khi tải dữ liệu người dùng!')),
+        );
+      }
+    }
+  }
+
   void _handleNavigation(String screen, [Map<String, dynamic>? data]) {
-    if (screen == 'Cài đặt') {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => CaiDat()),
-      );
-    } else if (screen == 'Đơn hàng của tôi') {
-      // Chuyển đến màn hình DonHangScreen
+    if (screen == 'Đơn hàng của tôi') {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => DonHangScreen()),
       );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Đang chuyển đến: $screen'),
-          duration: Duration(seconds: 1),
+    } else if (screen == 'Thông tin cá nhân') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => tTinCaNhan(
+                  userId: '{id}',
+                )),
+      );
+    } else if (screen == 'Cài đặt') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => CaiDat(), // Navigate to the Settings screen
         ),
       );
     }
   }
 
   Widget _buildUserHeader() {
+    if (_isLoading) {
+      return Center(child: CircularProgressIndicator());
+    }
+
     return InkWell(
       onTap: () => _handleNavigation('Thông tin cá nhân'),
       child: Container(
@@ -160,7 +208,7 @@ class _TaiKhoanState extends State<TaiKhoan> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        userData['name'],
+                        _nameController.text,
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -168,45 +216,54 @@ class _TaiKhoanState extends State<TaiKhoan> {
                       ),
                       SizedBox(height: 4),
                       Text(
-                        userData['email'],
+                        _emailController.text,
                         style: TextStyle(
                           color: Colors.grey[600],
                           fontSize: 14,
                         ),
                       ),
                       SizedBox(height: 4),
-                      InkWell(
-                        onTap: () => _handleNavigation('Thông tin thành viên'),
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.star,
-                              size: 16,
-                              color: Colors.amber,
-                            ),
-                            SizedBox(width: 4),
-                            Text(
-                              userData['membershipLevel'],
-                              style: TextStyle(
-                                color: Colors.amber[700],
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ],
+                      Text(
+                        _phoneController.text,
+                        style: TextStyle(
+                          color: Colors.grey[600],
+                          fontSize: 14,
                         ),
+                      ),
+                      SizedBox(height: 4),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.star,
+                            size: 16,
+                            color: Colors.amber,
+                          ),
+                          SizedBox(width: 4),
+                          Text(
+                            userData['membershipLevel'],
+                            style: TextStyle(
+                              color: Colors.amber[700],
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
                 ),
                 IconButton(
-                    icon: Icon(Icons.edit),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => PersonalInfoScreen()),
-                      );
-                    }),
+                  icon: Icon(Icons.edit),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => PersonalInfoScreen(
+                          userId: 'userId',
+                        ),
+                      ),
+                    );
+                  },
+                ),
               ],
             ),
             SizedBox(height: 16),
@@ -359,7 +416,6 @@ class _TaiKhoanState extends State<TaiKhoan> {
             itemBuilder: (context, index) {
               return InkWell(
                 onTap: () {
-                  // Kiểm tra nếu là "Đơn hàng của tôi"
                   if (menuItems[index]['title'] == 'Đơn hàng của tôi') {
                     Navigator.push(
                       context,
@@ -424,6 +480,14 @@ class _TaiKhoanState extends State<TaiKhoan> {
   }
 
   @override
+  void dispose() {
+    _nameController.dispose();
+    _emailController.dispose();
+    _phoneController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[100],
@@ -458,13 +522,20 @@ class _TaiKhoanState extends State<TaiKhoan> {
               padding: EdgeInsets.all(16),
               color: Colors.white,
               child: TextButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const LoginApp(),
-                    ),
-                  );
+                onPressed: () async {
+                  SharedPreferences prefs =
+                      await SharedPreferences.getInstance();
+                  await prefs.clear(); // Clear all stored data
+
+                  if (context.mounted) {
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const LoginApp(),
+                      ),
+                      (route) => false,
+                    );
+                  }
                 },
                 child: Text(
                   'Đăng xuất',
@@ -480,15 +551,23 @@ class _TaiKhoanState extends State<TaiKhoan> {
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
+        onTap: _onItemTapped, // This is the correct handler for navigation
         type: BottomNavigationBarType.fixed,
         selectedItemColor: Colors.blue,
         unselectedItemColor: Colors.grey,
-        items: [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Trang chủ'),
+        items: const [
           BottomNavigationBarItem(
-              icon: Icon(Icons.category), label: 'Danh mục'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Tài khoản'),
+            icon: Icon(Icons.home),
+            label: 'Trang chủ',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.category),
+            label: 'Danh mục',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Tài khoản',
+          ),
         ],
       ),
     );

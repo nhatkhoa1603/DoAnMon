@@ -90,7 +90,6 @@ class _GioHangState extends State<Giohang> {
       appBar: AppBar(
         title: Text(
           'Giỏ hàng',
-          //style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)
         ),
         //centerTitle: true,
         backgroundColor: const Color(0xFF2196F3),
@@ -99,7 +98,6 @@ class _GioHangState extends State<Giohang> {
         actions: [
           TextButton(
             onPressed: () {
-              // Xử lý xóa tất cả
               showDialog(
                   context: context,
                   builder: (context) => AlertDialog(
@@ -175,7 +173,6 @@ class _GioHangState extends State<Giohang> {
                               ),
                             ),
                             SizedBox(width: 12),
-                            // Product details
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -217,7 +214,6 @@ class _GioHangState extends State<Giohang> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            // Quantity controls
                             Row(
                               children: [
                                 IconButton(
@@ -244,7 +240,6 @@ class _GioHangState extends State<Giohang> {
                                 ),
                               ],
                             ),
-                            // Delete button
                             IconButton(
                               icon:
                                   Icon(Icons.delete_outline, color: Colors.red),
@@ -300,10 +295,6 @@ class _GioHangState extends State<Giohang> {
                   ),
                   SizedBox(width: 16),
                   ElevatedButton(
-                    //   onPressed: () {
-                    //     Navigator.pushNamed(context, '/thongtinmuahang');
-                    //  // Navigator.pop(context,'/thongtinmuahang');
-                    //   },
                     onPressed: () {
                       Navigator.push(
                         context,

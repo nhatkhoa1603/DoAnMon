@@ -10,40 +10,35 @@ class Chitietsp extends StatefulWidget {
 }
 
 class _chiTietSP extends State<Chitietsp> {
-  int masp=0; 
-  Future< Sanpham> fetchChitietSP() async {
-    final response =
-        await http.get(Uri.parse("https://10.0.2.2:7042/sanPham/chiTietSanPham/$masp"));
+  int masp = 0;
+  Future<Sanpham> fetchChitietSP() async {
+    final response = await http
+        .get(Uri.parse("https://10.0.2.2:7042/sanPham/chiTietSanPham/$masp"));
     if (response.statusCode == 200) {
       final List<dynamic> dataTimSp = json.decode(response.body);
-        List<Sanpham> sanPhams = [];
+      List<Sanpham> sanPhams = [];
 
-        sanPhams = dataTimSp.map((value) => Sanpham.fromJson(value)).toList();
-        return sanPhams[0];
-    }else{
+      sanPhams = dataTimSp.map((value) => Sanpham.fromJson(value)).toList();
+      return sanPhams[0];
+    } else {
       throw Exception("Không có chi tiết sản phẩm ");
     }
   }
+
   @override
   void initState() {
     super.initState();
-fetchChitietSP();
+    fetchChitietSP();
   }
 
   @override
   void didChangeDependencies() {
-    // TODO: implement didChangeDependencies
     super.didChangeDependencies();
-        masp = ModalRoute.of(context)?.settings.arguments as int;//hứng chuỗi tim kiếm bên màng hình trang chủ
-
+    masp = ModalRoute.of(context)?.settings.arguments as int;
   }
 
-  
   @override
   Widget build(BuildContext context) {
-    // Lấy đối tượng sản phẩm từ ModalRoute
-   // final Sanpham sanpham = ModalRoute.of(context)!.settings.arguments as Sanpham;
-
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -64,89 +59,79 @@ fetchChitietSP();
       body: Stack(
         children: [
           SingleChildScrollView(
-            padding: EdgeInsets.only(bottom: 80),
-            child: FutureBuilder(future: fetchChitietSP(), builder: (context, snapshot) {
-              if(snapshot.hasData){
-                return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Image.network(
-                  snapshot.data!.hinhAnh, // Sử dụng hình ảnh từ đối tượng
-                  fit: BoxFit.cover,
-                  width: double.infinity,
-                  height: 350,
-                ),
-                Padding(
-                  padding: EdgeInsets.all(12),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        snapshot.data!.tenSanPham, // Hiển thị tên sản phẩm
-                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                      ),
-                     // SizedBox(height: 10),
-                      Row(
+              padding: EdgeInsets.only(bottom: 80),
+              child: FutureBuilder(
+                  future: fetchChitietSP(),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                         // SizedBox(width: 5),
-                          Text(
-                            "Ram: ${snapshot.data!.Ram}\nCPU: ${snapshot.data!.CPU}",
-                            style: TextStyle(color: const Color.fromARGB(255, 0, 0, 0), fontSize: 16),
+                          Image.network(
+                            snapshot.data!.hinhAnh,
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                            height: 350,
+                          ),
+                          Padding(
+                            padding: EdgeInsets.all(12),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  snapshot.data!.tenSanPham,
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                Row(
+                                  children: [
+                                    Text(
+                                      "Ram: ${snapshot.data!.Ram}\nCPU: ${snapshot.data!.CPU}",
+                                      style: TextStyle(
+                                          color: const Color.fromARGB(
+                                              255, 0, 0, 0),
+                                          fontSize: 16),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: 10),
+                                Text(
+                                  '${snapshot.data!.giaXuat} ₫',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.red,
+                                      fontSize: 30),
+                                ),
+                                SizedBox(height: 10),
+                                Text(
+                                  'Đặc điểm nổi bật',
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                SizedBox(height: 15),
+                                Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 2),
+                                  child: Text(
+                                    snapshot.data!
+                                        .moTa, // Sử dụng mô tả sản phẩm từ đối tượng
+                                    style: TextStyle(fontSize: 16),
+                                    softWrap: true,
+                                  ),
+                                ),
+                                SizedBox(height: 15),
+                              ],
+                            ),
                           ),
                         ],
-                      ),
-                      SizedBox(height: 10),
-                      Text(
-                        '${snapshot.data!.giaXuat} ₫', // Sử dụng giá xuất từ đối tượng
-                        style: TextStyle(fontWeight: FontWeight.bold, color: Colors.red, fontSize: 30),
-                      ),
-                      SizedBox(height: 10),
-                      Text(
-                        'Đặc điểm nổi bật',
-                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                      ),
-                      SizedBox(height: 15),
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 2),
-                        child: Text(
-                          snapshot.data!.moTa, // Sử dụng mô tả sản phẩm từ đối tượng
-                          style: TextStyle(fontSize: 16),
-                          softWrap: true,
-                        ),
-                      ),
-                      SizedBox(height: 15),
-                      // Thêm các ảnh và chi tiết khác tùy thuộc vào sản phẩm
-                     
-                      // SizedBox(height: 15),
-                      // Text(
-                      //   'Thiết kế HP Pavilion 14-dv2070TU 7C0V9PA thanh lịch, sang trọng và cao cấp',
-                      //   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                      // ),
-                      // SizedBox(height: 15),
-                      // Padding(
-                      //   padding: EdgeInsets.symmetric(horizontal: 2),
-                      //   child: Text(
-                      //     'HP Pavilion 14-dv2070TU 7C0V9PA khoác trên mình bộ cánh...',
-                      //     style: TextStyle(fontSize: 16),
-                      //     softWrap: true,
-                      //   ),
-                      // ),
-                      // SizedBox(height: 15),
-                      // Thêm các thông số còn lại từ đối tượng 'Sanpham'
-                      // ...
-                    ],
-                  ),
-                ),
-              ],
-            );
-
-              }else if(snapshot.hasError){
-          return Text(snapshot.error.toString());
-        }else{
-          return const Center(child: CircularProgressIndicator());
-        }
-            })
-          ),
+                      );
+                    } else if (snapshot.hasError) {
+                      return Text(snapshot.error.toString());
+                    } else {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                  })),
           Positioned(
             left: 0,
             right: 0,
@@ -167,12 +152,13 @@ fetchChitietSP();
               child: Row(
                 children: [
                   Expanded(
-                    flex: 3, // Cho button thêm vào giỏ hàng nhiều không gian hơn
+                    flex:
+                        3, // Cho button thêm vào giỏ hàng nhiều không gian hơn
                     child: ElevatedButton(
                       onPressed: () {
                         Navigator.pushNamed(context, '/giohang');
                       },
-                      child: FittedBox( // Sử dụng FittedBox để đảm bảo text không bị xuống dòng
+                      child: FittedBox(
                         fit: BoxFit.scaleDown,
                         child: Text(
                           'Thêm vào giỏ hàng',
@@ -181,8 +167,8 @@ fetchChitietSP();
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
                           ),
-                          maxLines: 1, // Giới hạn chỉ 1 dòng
-                          overflow: TextOverflow.ellipsis, // Nếu quá dài sẽ hiển thị ...
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                       style: ElevatedButton.styleFrom(
@@ -191,13 +177,13 @@ fetchChitietSP();
                           borderRadius: BorderRadius.circular(5),
                         ),
                         minimumSize: Size(0, 50),
-                        padding: EdgeInsets.symmetric(horizontal: 10), // Giảm padding ngang
+                        padding: EdgeInsets.symmetric(horizontal: 10),
                       ),
                     ),
                   ),
-                  SizedBox(width: 10), // Giảm khoảng cách giữa 2 button
+                  SizedBox(width: 10),
                   Expanded(
-                    flex: 2, // Button mua ngay chiếm ít không gian hơn
+                    flex: 2,
                     child: ElevatedButton(
                       onPressed: () {
                         Navigator.pushNamed(context, '/thongtinmuahang');

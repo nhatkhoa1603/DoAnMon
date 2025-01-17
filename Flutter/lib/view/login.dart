@@ -1,8 +1,6 @@
-// lib/screens/login.dart
-
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../services/user_service.dart'; // Import the UserService
+import '../services/user_service.dart';
 import '../Widget/text_field.dart';
 import '../services/user_service.dart';
 import 'sign_up.dart';
@@ -32,7 +30,7 @@ class _LoginAppState extends State<LoginApp> {
     final password = passwordController.text.trim();
 
     if (username.isEmpty || password.isEmpty) {
-      showSnackBar(context, "Please fill in all fields");
+      showSnackBar(context, "Vui lòng điền đầy đủ thông tin");
       return;
     }
 
@@ -41,27 +39,26 @@ class _LoginAppState extends State<LoginApp> {
     });
 
     try {
-      final response =
-          await UserService.login(username, password); // Call the login method
-      print('Response data: $response');
+      final response = await UserService.login(username, password);
+      print('Dữ liệu phản hồi: $response');
 
       if (response['success'] == true) {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setString('userId', response['maTaiKhoan'].toString());
-        Navigator.pushReplacement(
-          context,
+
+        Navigator.of(context).pushReplacement(
           MaterialPageRoute(
             builder: (context) => TrangChu(),
             settings:
                 RouteSettings(arguments: response['maTaiKhoan'].toString()),
           ),
         );
-        showSnackBar(context, "Login successful!");
+        showSnackBar(context, "Đăng nhập thành công!");
       } else {
-        showSnackBar(context, response['message'] ?? "Login failed");
+        showSnackBar(context, response['message'] ?? "Đăng nhập thất bại");
       }
     } catch (e) {
-      showSnackBar(context, "Connection error: $e");
+      showSnackBar(context, "Lỗi kết nối: $e");
     } finally {
       setState(() {
         isLoading = false;
@@ -69,24 +66,9 @@ class _LoginAppState extends State<LoginApp> {
     }
   }
 
-  // void checkLoginStatus() async {
-  //   SharedPreferences prefs = await SharedPreferences.getInstance();
-  //   String? userId = prefs.getString('userId');
-  //   print(userId);
-  //   if (userId != null) {
-  //     Navigator.of(context).pushReplacement(
-  //       MaterialPageRoute(
-  //         builder: (context) => TrangChu(),
-  //         settings: RouteSettings(arguments: userId),
-  //       ),
-  //     );
-  //   }
-  // }
-
   @override
   void initState() {
     super.initState();
-    //checkLoginStatus();
   }
 
   @override
@@ -94,82 +76,85 @@ class _LoginAppState extends State<LoginApp> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(18),
-              child: Image.asset(
-                "images/signup.jpg",
-                fit: BoxFit.cover,
-                height: 250,
-                width: 300,
+        child: Center(
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(18),
+                child: Image.asset(
+                  "images/signup.jpg",
+                  fit: BoxFit.cover,
+                  height: 250,
+                  width: 300,
+                ),
               ),
-            ),
-            TextFieldInput(
-              textEditingController: usernameController,
-              hintText: "Enter your username",
-              icon: Icons.person,
-            ),
-            TextFieldInput(
-              isPass: true,
-              textEditingController: passwordController,
-              hintText: "Enter your password",
-              icon: Icons.lock,
-            ),
-            isLoading
-                ? const CircularProgressIndicator()
-                : MyButton(onTap: loginUsers, text: "Login"),
-            const SizedBox(height: 17),
-            Row(
-              children: [
-                Expanded(
-                  child: Container(
-                    height: 1,
-                    color: Colors.black,
-                  ),
-                ),
-                const Text("   or   "),
-                Expanded(
-                  child: Container(
-                    height: 1,
-                    color: Colors.black,
-                  ),
-                ),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text(
-                  "Don't have an account? ",
-                  style: TextStyle(fontSize: 16),
-                ),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const SignUpScreen(),
-                      ),
-                    );
-                  },
-                  child: const Text(
-                    "Sign Up",
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
+              TextFieldInput(
+                textEditingController: usernameController,
+                hintText: "Nhập tên đăng nhập",
+                icon: Icons.person,
+              ),
+              TextFieldInput(
+                isPass: true,
+                textEditingController: passwordController,
+                hintText: "Nhập mật khẩu",
+                icon: Icons.lock,
+              ),
+              isLoading
+                  ? const CircularProgressIndicator()
+                  : MyButton(onTap: loginUsers, text: "Đăng nhập"),
+              const SizedBox(height: 17),
+              Row(
+                children: [
+                  Expanded(
+                    child: Container(
+                      height: 1,
+                      color: Colors.black,
                     ),
                   ),
-                ),
-              ],
-            ),
-          ],
+                  const Text("   hoặc   "),
+                  Expanded(
+                    child: Container(
+                      height: 1,
+                      color: Colors.black,
+                    ),
+                  ),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text(
+                    "Bạn chưa có tài khoản? ",
+                    style: TextStyle(fontSize: 16),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const SignUpScreen(),
+                        ),
+                      );
+                    },
+                    child: const Text(
+                      "Đăng ký",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
+// Hàm hiển thị thông báo SnackBar
 void showSnackBar(BuildContext context, String message) {
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(content: Text(message)),

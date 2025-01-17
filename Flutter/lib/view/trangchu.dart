@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:doanmonhoc/model/SanPham.dart';
-//import 'package:doanmonhoc/view/chitietsp.dart';
 import 'package:doanmonhoc/view/giohang.dart';
 import 'package:doanmonhoc/view/taikhoan.dart';
 import 'danhmuc.dart';
@@ -32,17 +31,6 @@ class _TrangChuState extends State<TrangChu> {
     }
   }
 
-  //  Future<void> fetchTimSp() async {
-  //   final response =
-  //       await http.get(Uri.parse("https://10.0.2.2:7042/sanPham/timkiem/$_searchSanPham"));
-  //   if (response.statusCode == 200) {
-  //     final List<dynamic> dataTimSp = json.decode(response.body)['data'];
-  //     setState(() {
-  //       sanPhams = dataTimSp.map((value) => Sanpham.fromJson(value)).toList();
-  //     });
-  //   }
-  // }
-
   final PageController _pageController = PageController();
   Timer? _timer;
   int _currentPage = 0;
@@ -50,17 +38,17 @@ class _TrangChuState extends State<TrangChu> {
 
   final List<Map<String, String>> banners = [
     {
-      'image': 'images/a1.png',
+      'image': 'images/MacBook.jpeg',
       'title': 'MacBook Pro M2',
       'description': 'Hiệu năng vượt trội'
     },
     {
-      'image': 'images/a2.png',
+      'image': 'images/LapTopGaming.jpeg',
       'title': 'Gaming Laptop',
       'description': 'Giảm giá đến 20%'
     },
     {
-      'image': 'images/a3.png',
+      'image': 'images/VP.jpeg',
       'title': 'Laptop Văn Phòng',
       'description': 'Khuyến mãi đặc biệt'
     },
@@ -93,12 +81,9 @@ class _TrangChuState extends State<TrangChu> {
   void initState() {
     super.initState();
     fetchdsSanPham();
-    //fetchTimSp();
     _searchController.addListener(() {});
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      // SystemChannels.textInput.invokeMethod('TextInput.show');
-    });
+    WidgetsBinding.instance.addPostFrameCallback((_) {});
   }
 
   void _onItemTapped(int index) {
@@ -299,7 +284,7 @@ class _TrangChuState extends State<TrangChu> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Laptop Nổi Bật',
+                'Tất cả sản phẩm',
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -329,8 +314,7 @@ class _TrangChuState extends State<TrangChu> {
                   Navigator.pushNamed(
                     context,
                     '/chitietsanpham',
-                    arguments: laptop
-                        .maSanPham, //truyền cái mã sản phẩm sang chi tiết sp screen
+                    arguments: laptop.maSanPham,
                   );
                 },
                 child: Container(
@@ -442,19 +426,16 @@ class _TrangChuState extends State<TrangChu> {
             color: Colors.grey[100],
             borderRadius: BorderRadius.circular(20),
           ),
-          child: GestureDetector(
-            child: TextField(
-              controller: _searchSanPham,
-              decoration: InputDecoration(
-                hintText: 'Tìm kiếm laptop...',
-                hintStyle: TextStyle(fontSize: 14),
-                border: InputBorder.none,
-                contentPadding: EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 0), // Điều chỉnh khoảng cách vào bên trong
-              ),
+          child: TextField(
+            controller: _searchSanPham,
+            decoration: InputDecoration(
+              hintText: 'Tìm kiếm laptop...',
+              hintStyle: TextStyle(fontSize: 14),
+              border: InputBorder.none,
+              contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 0),
             ),
           ),
+          // ),
         ),
         actions: [
           IconButton(
@@ -473,7 +454,6 @@ class _TrangChuState extends State<TrangChu> {
             icon: Icon(Icons.shopping_cart),
             color: Colors.black87,
             onPressed: () {
-              // Chuyển sang màn hình giỏ hàng
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => Giohang()),

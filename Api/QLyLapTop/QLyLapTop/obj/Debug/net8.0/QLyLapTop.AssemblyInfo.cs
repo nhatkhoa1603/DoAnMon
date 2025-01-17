@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("QLyLapTop")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5986825259263d7290d1db8d54ebfe755f6fa096")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+fa9b1171d2dde9dfce15cdb5e40f071b4499b99e")]
 [assembly: System.Reflection.AssemblyProductAttribute("QLyLapTop")]
 [assembly: System.Reflection.AssemblyTitleAttribute("QLyLapTop")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

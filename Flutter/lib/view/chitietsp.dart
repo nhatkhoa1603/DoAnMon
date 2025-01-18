@@ -152,8 +152,7 @@ class _chiTietSP extends State<Chitietsp> {
               child: Row(
                 children: [
                   Expanded(
-                    flex:
-                        3, // Cho button thêm vào giỏ hàng nhiều không gian hơn
+                    flex: 3,
                     child: ElevatedButton(
                       onPressed: () {
                         Navigator.pushNamed(context, '/giohang');

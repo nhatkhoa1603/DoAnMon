@@ -1,3 +1,4 @@
+import 'package:doanmonhoc/view/danhsachdon.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/user_service.dart';
@@ -46,13 +47,27 @@ class _LoginAppState extends State<LoginApp> {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setString('userId', response['maTaiKhoan'].toString());
 
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(
-            builder: (context) => TrangChu(),
-            settings:
-                RouteSettings(arguments: response['maTaiKhoan'].toString()),
-          ),
-        );
+        String role = response['taiKhoan']['loaiTaiKhoan'];
+
+        if (role == "ADMIN") {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (context) => QuanLyDonHang(),
+              settings:
+                  RouteSettings(arguments: response['maTaiKhoan'].toString()),
+            ),
+          );
+        } else {
+          // If the user is a regular user, navigate to TrangChu (Home Page)
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (context) => TrangChu(),
+              settings:
+                  RouteSettings(arguments: response['maTaiKhoan'].toString()),
+            ),
+          );
+        }
+
         showSnackBar(context, "Đăng nhập thành công!");
       } else {
         showSnackBar(context, response['message'] ?? "Đăng nhập thất bại");

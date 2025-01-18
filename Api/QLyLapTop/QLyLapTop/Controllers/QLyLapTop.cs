@@ -219,7 +219,6 @@ namespace QLyLapTop.Controllers
                 }
 
                 obj.TrangThai ??= 1;
-
                 dbc.TaiKhoans.Add(obj);
                 dbc.SaveChanges();
 
@@ -261,12 +260,15 @@ namespace QLyLapTop.Controllers
             {
                 success = true,
                 message = "Đăng nhập thành công!",
-                maTaiKhoan = taiKhoan.MaTaiKhoan, 
+                maTaiKhoan = taiKhoan.MaTaiKhoan,
                 taiKhoan = new
                 {
                     taiKhoan.MaTaiKhoan,
                     taiKhoan.TenDangNhap,
-                    taiKhoan.TrangThai
+                    taiKhoan.MatKhau,
+                    taiKhoan.TrangThai,
+                    taiKhoan.LoaiTaiKhoan
+
                 }
             });
         }

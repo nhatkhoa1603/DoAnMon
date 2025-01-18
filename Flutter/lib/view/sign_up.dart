@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'dart:io';
 import '../Widget/text_field.dart';
 import 'login.dart';
 
@@ -20,7 +19,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   String? selectedGender;
-  String? selectedAccountType;
   bool isLoading = false;
 
   @override
@@ -42,7 +40,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     final phone = phoneController.text.trim();
     final email = emailController.text.trim();
     final password = passwordController.text.trim();
-    final accountType = selectedAccountType;
+    final accountType = 'KHACHHANG';
 
     setState(() {
       isLoading = true;
@@ -54,8 +52,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         address.isEmpty ||
         phone.isEmpty ||
         email.isEmpty ||
-        password.isEmpty ||
-        accountType == null) {
+        password.isEmpty) {
       showSnackBar(context, "Vui lòng điền đầy đủ thông tin");
       setState(() {
         isLoading = false;
@@ -63,6 +60,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       return;
     }
 
+    // Email validation
     bool isValidEmail(String email) {
       return email.toLowerCase().endsWith('@gmail.com');
     }
@@ -75,6 +73,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       return;
     }
 
+    // Password validation
     if (password.length < 6) {
       showSnackBar(context, "Mật khẩu phải có ít nhất 6 ký tự");
       setState(() {
@@ -83,6 +82,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       return;
     }
 
+    // Phone number validation
     if (!RegExp(r'^[0-9]{10}$').hasMatch(phone)) {
       showSnackBar(context, "Số điện thoại không hợp lệ");
       setState(() {
@@ -104,16 +104,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
         }),
       );
 
-      print('Data sent to API: ${jsonEncode({
-            'TenKhachHang': name,
-            'GioiTinh': gender,
-            'DiaChi': address,
-            'SoDienThoai': phone,
-            'Email': email,
-          })}');
-      print('KhachHang Response status: ${responseKhachHang.statusCode}');
-      print('KhachHang Response body: ${responseKhachHang.body}');
-
       final responseTaiKhoan = await http.post(
         Uri.parse('https://10.0.2.2:7042/TaiKhoan/Them'),
         headers: {'Content-Type': 'application/json'},
@@ -123,9 +113,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
           'loaiTaiKhoan': accountType,
         }),
       );
-
-      print('TaiKhoan Response status: ${responseTaiKhoan.statusCode}');
-      print('TaiKhoan Response body: ${responseTaiKhoan.body}');
 
       if (responseKhachHang.statusCode == 200 &&
           responseTaiKhoan.statusCode == 200) {
@@ -193,38 +180,53 @@ class _SignUpScreenState extends State<SignUpScreen> {
               icon: Icons.person,
             ),
             const SizedBox(height: 10),
-            Container(
-              margin: const EdgeInsets.symmetric(horizontal: 20),
-              padding: const EdgeInsets.symmetric(horizontal: 15),
-              decoration: BoxDecoration(
-                color: Colors.grey[100],
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Row(
-                children: [
-                  const Icon(Icons.people, color: Colors.grey),
-                  const SizedBox(width: 15),
-                  Expanded(
-                    child: DropdownButtonHideUnderline(
-                      child: DropdownButton<String>(
-                        value: selectedGender,
-                        hint: const Text("Chọn giới tính"),
-                        isExpanded: true,
-                        items: const [
-                          DropdownMenuItem(value: "Nam", child: Text("Nam")),
-                          DropdownMenuItem(value: "Nữ", child: Text("Nữ")),
-                          DropdownMenuItem(value: "Khác", child: Text("Khác")),
-                        ],
-                        onChanged: (value) {
-                          setState(() {
-                            selectedGender = value;
-                          });
-                        },
-                      ),
+            // Giới tính với RadioButton nằm ngang
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Row(
+                  children: [
+                    Radio<String>(
+                      value: "Nam",
+                      groupValue: selectedGender,
+                      onChanged: (value) {
+                        setState(() {
+                          selectedGender = value;
+                        });
+                      },
                     ),
-                  ),
-                ],
-              ),
+                    const Text("Nam"),
+                  ],
+                ),
+                Row(
+                  children: [
+                    Radio<String>(
+                      value: "Nữ",
+                      groupValue: selectedGender,
+                      onChanged: (value) {
+                        setState(() {
+                          selectedGender = value;
+                        });
+                      },
+                    ),
+                    const Text("Nữ"),
+                  ],
+                ),
+                Row(
+                  children: [
+                    Radio<String>(
+                      value: "Khác",
+                      groupValue: selectedGender,
+                      onChanged: (value) {
+                        setState(() {
+                          selectedGender = value;
+                        });
+                      },
+                    ),
+                    const Text("Khác"),
+                  ],
+                ),
+              ],
             ),
             const SizedBox(height: 10),
             TextFieldInput(
@@ -252,40 +254,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
               isPass: true,
             ),
             const SizedBox(height: 10),
-            Container(
-              margin: const EdgeInsets.symmetric(horizontal: 20),
-              padding: const EdgeInsets.symmetric(horizontal: 15),
-              decoration: BoxDecoration(
-                color: Colors.grey[100],
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Row(
-                children: [
-                  const Icon(Icons.account_box, color: Colors.grey),
-                  const SizedBox(width: 15),
-                  Expanded(
-                    child: DropdownButtonHideUnderline(
-                      child: DropdownButton<String>(
-                        value: selectedAccountType,
-                        hint: const Text("Chọn loại tài khoản"),
-                        isExpanded: true,
-                        items: const [
-                          DropdownMenuItem(
-                              value: "KHACHHANG", child: Text("KHACHHANG")),
-                          DropdownMenuItem(
-                              value: "ADMIN", child: Text("ADMIN")),
-                        ],
-                        onChanged: (value) {
-                          setState(() {
-                            selectedAccountType = value;
-                          });
-                        },
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
             const SizedBox(height: 15),
             isLoading
                 ? const CircularProgressIndicator()

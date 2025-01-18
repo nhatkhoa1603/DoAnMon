@@ -18,7 +18,7 @@ class _chitietdonState extends State<chitietdon> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final hoaDon = ModalRoute.of(context)!.settings.arguments as hoaDonAdmin;
-      fetchDSDon(hoaDon.maHoaDon); // Tải danh sách khi widget được khởi tạo
+      fetchDSDon(hoaDon.maHoaDon);
     });
   }
 
@@ -100,7 +100,6 @@ class _chitietdonState extends State<chitietdon> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Thông tin người mua
               Text(
                 "Thông tin người mua",
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -115,7 +114,6 @@ class _chitietdonState extends State<chitietdon> {
                 subtitle: Text(hoaDon.soDienThoai),
               ),
               Divider(),
-
               Text(
                 "Thông tin đơn hàng",
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -136,7 +134,6 @@ class _chitietdonState extends State<chitietdon> {
                 },
               ),
               Divider(),
-
               Text(
                 "Trạng thái đơn hàng",
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -177,7 +174,6 @@ class _chitietdonState extends State<chitietdon> {
                 ),
               ),
               Divider(),
-
               Text(
                 "Tổng cộng",
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -185,7 +181,6 @@ class _chitietdonState extends State<chitietdon> {
               SizedBox(height: 8),
               TotalPriceCard(orderItems: chiTietdons),
               Divider(),
-
               SizedBox(height: 16),
               hoaDon.trangThai == 1
                   ? ElevatedButton(
@@ -200,14 +195,13 @@ class _chitietdonState extends State<chitietdon> {
                               actions: [
                                 TextButton(
                                   onPressed: () {
-                                    Navigator.of(context).pop(); // Đóng dialog
+                                    Navigator.of(context).pop();
                                   },
                                   child: Text("Hủy"),
                                 ),
                                 ElevatedButton(
                                   onPressed: () async {
-                                    Navigator.of(context).pop(); // Đóng dialog
-                                    // Thực hiện cập nhật thông tin
+                                    Navigator.of(context).pop();
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
                                         content: Text(

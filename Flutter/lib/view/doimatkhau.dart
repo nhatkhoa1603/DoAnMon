@@ -16,7 +16,7 @@ class ChangePasswordScreen extends StatefulWidget {
 class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   final _oldPasswordController = TextEditingController();
   final _newPasswordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController(); // New controller
   final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
   String? _errorMessage;
@@ -33,6 +33,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       _isLoading = true;
       _errorMessage = null;
     });
+
     String? userId = await _getuserId();
     if (userId == null) {
       if (mounted) {
@@ -42,14 +43,14 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       }
       return;
     }
-
     final urlChangePassword = Uri.parse(
-        'https://10.0.2.2:7042//taiKhoan/doiMatKhau/${userId}?mkcu=${_oldPasswordController.text}');
+      'https://10.0.2.2:7042/taiKhoan/doiMatKhau/${userId}?mkcu=${_oldPasswordController.text}',
+    );
 
     final headers = {'Content-Type': 'application/json'};
-
     final body = json.encode({
       'matKhau': _newPasswordController.text,
+      'TenDangNhap': userId,
     });
 
     try {
@@ -58,18 +59,25 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
+
         if (responseData['success']) {
           _showSuccessDialog(responseData['message']);
         } else {
           setState(() {
-            _errorMessage = responseData['Message'];
+            _errorMessage = responseData['Message'] ?? 'Lỗi không xác định';
           });
         }
-      } else {
-        setState(() {
-          _errorMessage = 'Đổi mật khẩu thành công';
-        });
       }
+      setState(() {
+        print('Response body: ${response.body}');
+        try {
+          final responseData = json.decode(response.body);
+          _errorMessage =
+              responseData['message'] ?? 'Đổi mật khẩu không thành công';
+        } catch (e) {
+          _errorMessage = 'Đổi mật khẩu không thành công';
+        }
+      });
     } catch (error) {
       setState(() {
         _errorMessage = 'Có lỗi xảy ra: $error';
@@ -170,10 +178,10 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 obscureText: true,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Vui lòng xác nhận lại mật khẩu';
+                    return 'Vui lòng xác nhận mật khẩu mới';
                   }
                   if (value != _newPasswordController.text) {
-                    return 'Mật khẩu xác nhận không khớp';
+                    return 'Mật khẩu không khớp';
                   }
                   return null;
                 },

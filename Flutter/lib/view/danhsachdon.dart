@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:doanmonhoc/model/hoaDonAdmin.dart';
+import 'package:doanmonhoc/view/login.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -104,10 +105,18 @@ class _QuanLyDonHangState extends State<QuanLyDonHang> {
           style: TextStyle(color: Colors.white),
         ),
         backgroundColor: Colors.blueAccent,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Navigator.pop(context),
-        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.exit_to_app, color: Colors.white),
+            onPressed: () {
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(
+                  builder: (context) => const LoginApp(),
+                ),
+              );
+            },
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(10.0),

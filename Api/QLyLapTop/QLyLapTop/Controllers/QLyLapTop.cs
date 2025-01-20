@@ -276,27 +276,46 @@ namespace QLyLapTop.Controllers
 
         [HttpPost]
         [Route("/taiKhoan/doiMatKhau/{id}")]
-        public async Task<IActionResult> DangNhap(int id,String mkcu, TaiKhoan obj)
+        public async Task<IActionResult> DangNhap(int id, string mkcu, TaiKhoan obj)
         {
-            var taiKhoan = await dbc.TaiKhoans
-                .FirstOrDefaultAsync(t => t.MaTaiKhoan == id );
-            var ktraMK = await dbc.TaiKhoans
-                .FirstOrDefaultAsync(t => t.MatKhau == mkcu);
 
+            var taiKhoan = await dbc.TaiKhoans.FirstOrDefaultAsync(t => t.MaTaiKhoan == id);
             if (taiKhoan == null)
             {
-                return NotFound(new { success = false,Message = "Khong tim thay ID" });
+                return NotFound(new { success = false, Message = "Không tìm thấy tài khoản với ID này" });
             }
-
-            if (ktraMK == null)
+            if (taiKhoan.MatKhau != mkcu)
             {
-                return NotFound(new { success = false, Message = "mk cu khong khop" });
+                return BadRequest(new { success = false, Message = "Mật khẩu cũ không chính xác" });
+            }
+            if (string.IsNullOrWhiteSpace(obj.MatKhau) || obj.MatKhau.Length < 6)
+            {
+                return BadRequest(new { success = false, Message = "Mật khẩu mới phải chứa ít nhất 6 ký tự" });
+            }
+            if (obj.MatKhau.Contains(" "))
+            {
+                return BadRequest(new { success = false, Message = "Mật khẩu mới không được chứa khoảng trắng" });
             }
             taiKhoan.MatKhau = obj.MatKhau;
-            dbc.SaveChanges();
-            return Ok(new { success = true, message = $"Doi mat khau thanh cong!" });
+            await dbc.SaveChangesAsync();
+
+            return Ok(new { success = true, Message = "Đổi mật khẩu thành công!" });
         }
         //------------------- hoa Don ------------------------//
+
+        [HttpPost]
+        [Route("/hoaDon/Them")]
+        public ActionResult ThemHoaDon(HoaDon obj)
+        {
+            obj.MaDiaChiGiao = 1;
+            obj.TrangThai = 1;
+            obj.MaKhuyenMai = null;
+            obj.NgayDatHang = DateTime.Now;
+            dbc.HoaDons.Add(obj);
+            dbc.SaveChanges();
+
+            return Ok(new { success = true, data = obj, message = "Tạo hóa đơn thành công!" });
+        }
 
         [HttpGet]
         [Route("/hoaDon/locTheotrangthai/{trangthai}")]
@@ -433,11 +452,14 @@ namespace QLyLapTop.Controllers
             {
                 return NotFound(new { success = false, message = $"khong tim thay don hang voi ID: {id}!" });
             }
-
-            hoadon.TrangThai = 2;
+            if(hoadon.TrangThai < 3)
+            {
+                hoadon.TrangThai += 1;
+            }
+           
             dbc.SaveChanges();
 
-            return Ok(new { success = true, message = "Cap nhat thanh cong!" });
+            return Ok(new { success = true,message = "Cap nhat thanh cong!" });
         }
 
         //------------------- Chi tiet don hang ------------------------//
@@ -512,7 +534,16 @@ namespace QLyLapTop.Controllers
             }
         }
 
+        [HttpPost]
+        [Route("/chiTietHoaDon/Them")]
+        public ActionResult themChiTietHoaDon(ChiTietHoaDon obj)
+        {
+            obj.GiaBan = 0;
+            dbc.ChiTietHoaDons.Add(obj);
+            dbc.SaveChanges();
 
+            return Ok(new { success = true, message = "Thêm chi tiết hóa đơn thành công!" });
+        }
         //------------------- gio hang ------------------------//
 
         [HttpGet]
@@ -604,6 +635,43 @@ namespace QLyLapTop.Controllers
             dbc.SaveChanges();
 
             return Ok(new { success = true, message = "sua so luong thanh cong!" });
+        }
+
+        [HttpGet]
+        [Route("/gioHang/danhSachChiTiet/{maKhachHang}")]
+        public async Task<IActionResult> ChiTietGioHang(int maKhachHang)
+        {
+            try
+            {
+                var chiTietHoaDons = await dbc.GioHangs.Where(sp => sp.MaKhachHang == maKhachHang)
+                    .Join(
+                        dbc.SanPhams,
+                        gh => gh.MaSanPham,
+                        sp => sp.MaSanPham,
+                        (gh, sp) => new
+                        {
+                            gh.MaSanPham,
+                            gh.MaKhachHang,
+                            sp.TenSanPham,
+                            sp.GiaXuat,
+                            sp.HinhAnh,
+                            gh.SoLuong,
+                            
+                        }
+                    )
+                    .ToListAsync();
+
+                if (!chiTietHoaDons.Any())
+                {
+                    return NotFound(new { success = false, message = "Không tìm thấy chi tiết hóa đơn." });
+                }
+
+                return Ok(new { success = true, data = chiTietHoaDons });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = ex.Message });
+            }
         }
     }
 }

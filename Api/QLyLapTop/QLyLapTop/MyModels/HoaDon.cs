@@ -24,7 +24,8 @@ public partial class HoaDon
 
     public int? MaKhuyenMai { get; set; }
 
-    public int? TrangThai { get; set; }
     public int? TongTien { get; set; }
+    public int? TrangThai { get; set; }
+    
 
 }

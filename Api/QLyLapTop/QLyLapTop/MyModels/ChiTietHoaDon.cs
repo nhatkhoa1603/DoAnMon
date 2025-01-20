@@ -23,7 +23,7 @@ public partial class ChiTietHoaDon
 
     [Column(TypeName = "decimal(10, 2)")]
     public decimal? GiamGia { get; set; }
-
+    [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
     [Column(TypeName = "decimal(22, 2)")]
     public decimal? ThanhTien { get; set; }
 

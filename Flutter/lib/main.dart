@@ -37,10 +37,7 @@ class MyHttpOverrides extends HttpOverrides {
 void main() {
   HttpOverrides.global = MyHttpOverrides();
   runApp(
-    ChangeNotifierProvider(
-      create: (context) => CartProvider(),
-      child: MyApp(),
-    ),
+    MyApp(),
   );
 }
 

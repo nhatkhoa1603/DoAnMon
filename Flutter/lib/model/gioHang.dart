@@ -1,54 +1,25 @@
-import 'package:flutter/material.dart';
-import 'SanPham.dart';
+class Giohang_model {
+  final int maSanPham;
+  final int maKhachHang;
+  final String tensanPham;
+  final double Gia;
+  final String hinhAnh;
+  int soLuong;
 
-class CartProvider with ChangeNotifier {
-  List<Map<String, dynamic>> _cartItems = [];
-
-  List<Map<String, dynamic>> get cartItems => _cartItems;
-
-  void addToCart(Sanpham sanpham) {
-    _cartItems.add({
-      "name": sanpham.tenSanPham,
-      "price": sanpham.giaXuat,
-      "quantity": 1,
-      "isChecked": false,
-      "image": sanpham.hinhAnh,
-      "specs": "Ram: ${sanpham.Ram}, CPU: ${sanpham.CPU}",
-    });
-    notifyListeners();
-  }
-
-  void updateQuantity(int index, bool increase) {
-    if (increase) {
-      _cartItems[index]['quantity']++;
-    } else if (_cartItems[index]['quantity'] > 1) {
-      _cartItems[index]['quantity']--;
-    }
-    notifyListeners();
-  }
-
-  void removeItem(int index) {
-    _cartItems.removeAt(index);
-    notifyListeners();
-  }
-
-  double calculateTotal() {
-    if (_cartItems.isEmpty) {
-      print("Giỏ hàng trống khi tính tổng tiền");
-      return 0.0;
-    }
-    double total = 0.0;
-    for (var item in _cartItems) {
-      if (item['isChecked']) {
-        total += item['price'] * item['quantity'];
-      }
-    }
-    return total;
-  }
-
-  // Cập nhật giỏ hàng khi đăng nhập
-  void setCartItems(List<Map<String, dynamic>> items) {
-    _cartItems = items;
-    notifyListeners();
+  Giohang_model(
+      {required this.maSanPham,
+      required this.maKhachHang,
+      required this.tensanPham,
+      required this.Gia,
+      required this.hinhAnh,
+      required this.soLuong});
+  factory Giohang_model.fromJson(Map<String, dynamic> json) {
+    return Giohang_model(
+        maSanPham: json['maSanPham'],
+        maKhachHang: json['maKhachHang'],
+        tensanPham: json['tenSanPham'],
+        Gia: json['giaXuat'],
+        hinhAnh: json['hinhAnh'],
+        soLuong: json['soLuong']);
   }
 }

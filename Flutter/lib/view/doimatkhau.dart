@@ -33,7 +33,13 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       _isLoading = true;
       _errorMessage = null;
     });
-
+    if (_newPasswordController.text == _oldPasswordController.text) {
+      setState(() {
+        _errorMessage = 'Mật khẩu mới không được trùng với mật khẩu cũ';
+      });
+      _isLoading = false;
+      return;
+    }
     String? userId = await _getuserId();
     if (userId == null) {
       if (mounted) {

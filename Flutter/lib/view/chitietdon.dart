@@ -126,11 +126,11 @@ class _chitietdonState extends State<chitietdon> {
                 itemBuilder: (context, index) {
                   final item = chiTietdons[index];
                   return OrderItemCard(
-                    item: item,
-                    onQuantityChanged: (newQuantity) {
-                      _updateQuantity(index, newQuantity);
-                    },
-                  );
+                      item: item,
+                      onQuantityChanged: (newQuantity) {
+                        _updateQuantity(index, newQuantity);
+                      },
+                      trangThai: hoaDon.trangThai);
                 },
               ),
               Divider(),
@@ -244,8 +244,11 @@ class _chitietdonState extends State<chitietdon> {
 class OrderItemCard extends StatelessWidget {
   final chiTietHoaDonAdmin item;
   final Function(int) onQuantityChanged;
-
-  OrderItemCard({required this.item, required this.onQuantityChanged});
+  final int trangThai;
+  OrderItemCard(
+      {required this.item,
+      required this.onQuantityChanged,
+      required this.trangThai});
 
   @override
   Widget build(BuildContext context) {
@@ -270,25 +273,27 @@ class OrderItemCard extends StatelessWidget {
                   SizedBox(height: 8),
                   Text("Số lượng: ${item.soLuong}"),
                   SizedBox(height: 8),
-                  Row(
-                    children: [
-                      IconButton(
-                        icon: Icon(Icons.remove),
-                        onPressed: () {
-                          if (item.soLuong > 1) {
-                            onQuantityChanged(item.soLuong - 1);
-                          }
-                        },
-                      ),
-                      Text(item.soLuong.toString()),
-                      IconButton(
-                        icon: Icon(Icons.add),
-                        onPressed: () {
-                          onQuantityChanged(item.soLuong + 1);
-                        },
-                      ),
-                    ],
-                  ),
+                  trangThai == 1
+                      ? Row(
+                          children: [
+                            IconButton(
+                              icon: Icon(Icons.remove),
+                              onPressed: () {
+                                if (item.soLuong > 1) {
+                                  onQuantityChanged(item.soLuong - 1);
+                                }
+                              },
+                            ),
+                            Text(item.soLuong.toString()),
+                            IconButton(
+                              icon: Icon(Icons.add),
+                              onPressed: () {
+                                onQuantityChanged(item.soLuong + 1);
+                              },
+                            ),
+                          ],
+                        )
+                      : SizedBox.shrink(),
                 ],
               ),
             ),

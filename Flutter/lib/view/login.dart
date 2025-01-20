@@ -73,7 +73,7 @@ class _LoginAppState extends State<LoginApp> {
         showSnackBar(context, response['message'] ?? "Đăng nhập thất bại");
       }
     } catch (e) {
-      showSnackBar(context, "Lỗi kết nối: $e");
+      showSnackBar(context, "Tên đăng nhập và mật khẩu không hợp lệ");
     } finally {
       setState(() {
         isLoading = false;
@@ -95,7 +95,8 @@ class _LoginAppState extends State<LoginApp> {
           child: Column(
             children: [
               Padding(
-                padding: const EdgeInsets.all(18),
+                padding: const EdgeInsets.only(
+                    top: 120, left: 18, right: 18, bottom: 18),
                 child: Image.asset(
                   "images/signup.jpg",
                   fit: BoxFit.cover,
@@ -152,7 +153,7 @@ class _LoginAppState extends State<LoginApp> {
                       );
                     },
                     child: const Text(
-                      "Đăng ký",
+                      "Đăng ký ngay",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,

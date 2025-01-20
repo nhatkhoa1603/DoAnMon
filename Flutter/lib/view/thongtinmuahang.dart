@@ -1,5 +1,9 @@
-import 'package:doanmonhoc/view/trangchu.dart';
+import 'dart:convert';
+import 'package:doanmonhoc/model/gioHang.dart';
+import 'package:doanmonhoc/model/thongTinCaNhan.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class thong_tin_mua_hang extends StatefulWidget {
   @override
@@ -7,135 +11,155 @@ class thong_tin_mua_hang extends StatefulWidget {
 }
 
 class _thong_tin_mua_hang extends State<thong_tin_mua_hang> {
-  String? gioi_tinh;
-  String? hinh_thuc_nhan_hang;
-  int so_luong = 1;
-  final int gia = 13790000;
-
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _phoneController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _addressController = TextEditingController();
-
-  String? _nameError;
-  String? _phoneError;
-  String? _emailError;
-  String? _addressError;
-  String? _genderError;
-  String? _paymentError;
-
-  String? _selectedPaymentMethod;
-
-  int get tong_tien => so_luong * gia;
-
-  bool validateForm() {
-    bool isValid = true;
-
-    setState(() {
-      _nameError = null;
-      _phoneError = null;
-      _emailError = null;
-      _addressError = null;
-      _genderError = null;
-      _paymentError = null;
-
-      if (gioi_tinh == null) {
-        _genderError = "Vui lòng chọn giới tính";
-        isValid = false;
-      }
-
-      if (_nameController.text.isEmpty) {
-        _nameError = "Vui lòng nhập họ tên";
-        isValid = false;
-      }
-
-      if (_phoneController.text.isEmpty) {
-        _phoneError = "Vui lòng nhập số điện thoại";
-        isValid = false;
-      }
-
-      if (_emailController.text.isEmpty) {
-        _emailError = "Vui lòng nhập email";
-        isValid = false;
-      }
-
-      if (_addressController.text.isEmpty) {
-        _addressError = "Vui lòng nhập địa chỉ";
-        isValid = false;
-      }
-
-      if (_selectedPaymentMethod == null) {
-        _paymentError = "Vui lòng chọn phương thức thanh toán";
-        isValid = false;
-      }
-    });
-
-    return isValid;
+  List<Giohang_model> gioHangs = [];
+  bool isLoading = false;
+  late thongTinCaNhan user;
+  @override
+  void initState() {
+    super.initState();
+    fetchDSGioHang();
+    _fetchUserInfo();
   }
 
-  void _showConfirmDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Xác nhận đặt hàng'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Thông tin đơn hàng:'),
-              SizedBox(height: 10),
-              Text('Người nhận: ${gioi_tinh} ${_nameController.text}'),
-              Text('Số điện thoại: ${_phoneController.text}'),
-              Text('Email: ${_emailController.text}'),
-              Text('Địa chỉ: ${_addressController.text}'),
-              Text('Phương thức thanh toán: $_selectedPaymentMethod'),
-              Text('Tổng tiền: ${tong_tien.toString()} đ'),
-              SizedBox(height: 10),
-              Text('Bạn có chắc chắn muốn đặt hàng?'),
-            ],
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: Text('Hủy'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            TextButton(
-              child: Text('OK'),
-              onPressed: () {
-                Navigator.of(context).pop();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Đặt hàng thành công!'),
-                    backgroundColor: Colors.green,
-                    duration: Duration(seconds: 2),
-                  ),
-                );
-                _clearForm();
-                Navigator.pop(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => TrangChu(),
-                  ),
-                );
-              },
-            ),
-          ],
-        );
-      },
+  void _showErrorSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.red,
+      ),
     );
   }
 
-  void _clearForm() {
+  Future<String?> _getuserId() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('userId');
+  }
+
+  Future<void> fetchDSGioHang() async {
     setState(() {
-      gioi_tinh = null;
-      _nameController.clear();
-      _phoneController.clear();
-      _emailController.clear();
-      _addressController.clear();
-      _selectedPaymentMethod = null;
+      isLoading = true;
+    });
+
+    String? userId = await _getuserId();
+    if (userId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Vui lòng đăng nhập lại!')),
+      );
+      setState(() {
+        isLoading = false;
+      });
+      return;
+    }
+
+    final url =
+        Uri.parse("https://10.0.2.2:7042/gioHang/danhSachChiTiet/$userId");
+    try {
+      final response = await http.get(url);
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(response.body)['data'];
+        setState(() {
+          gioHangs =
+              data.map((value) => Giohang_model.fromJson(value)).toList();
+        });
+      } else {
+        _showErrorSnackBar(
+            'Không thể tải thông tin giỏ hàng. Mã lỗi: ${response.statusCode}');
+      }
+    } catch (e) {
+      _showErrorSnackBar('Có lỗi xảy ra khi tải thông tin giỏ hàng.');
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _fetchUserInfo() async {
+    String? userId = await _getuserId();
+    if (userId == null) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Vui lòng đăng nhập lại!')),
+        );
+      }
+
+      return;
+    }
+    final response =
+        await http.get(Uri.parse("https://10.0.2.2:7042/khachHang/$userId"));
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      setState(() {
+        user = thongTinCaNhan.fromJson(data);
+      });
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Không thể tải thông tin người dùng'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  Future<void> _datHang(int tongTien) async {
+    String? userIdString = await _getuserId();
+
+    if (userIdString == null) {
+      _showErrorSnackBar("Vui lòng đăng nhập để đặt hàng.");
+      return;
+    }
+
+    // Chuyển đổi userId từ String sang int
+    int? userId = int.tryParse(userIdString);
+
+    if (userId == null) {
+      _showErrorSnackBar("Mã người dùng không hợp lệ.");
+      return;
+    }
+    if (userId % 1 == 0) {
+      print("kieu int");
+    }
+    final hoaDonResponse = await http.post(
+      Uri.parse("https://10.0.2.2:7042/hoaDon/Them"),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({"maKhachHang": userId, "tongTien": tongTien}),
+    );
+
+    if (hoaDonResponse.statusCode == 200) {
+      final hoaDonData = jsonDecode(hoaDonResponse.body);
+      int maHoaDon = hoaDonData['data']['maDonHang'];
+
+      for (var gioHang in gioHangs) {
+        final chiTietResponse = await http.post(
+          Uri.parse("https://10.0.2.2:7042/chiTietHoaDon/Them"),
+          headers: {'Content-Type': 'application/json'},
+          body: jsonEncode({
+            "maHoaDon": maHoaDon,
+            "maSanPham": gioHang.maSanPham,
+            "soLuong": gioHang.soLuong,
+            "giaBan": gioHang.Gia,
+          }),
+        );
+
+        if (chiTietResponse.statusCode != 200) {
+          _showErrorSnackBar(
+              "Lỗi khi tạo chi tiết hóa đơn cho sản phẩm: ${gioHang.tensanPham}");
+          return;
+        }
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Đặt hàng thành công!")),
+      );
+    } else {
+      _showErrorSnackBar("Lỗi khi tạo hóa đơn. Vui lòng thử lại.");
+    }
+  }
+
+  void _updateQuantity(int index, int newQuantity) {
+    setState(() {
+      gioHangs[index].soLuong = newQuantity;
     });
   }
 
@@ -144,245 +168,216 @@ class _thong_tin_mua_hang extends State<thong_tin_mua_hang> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Điền thông tin mua hàng',
-          style: TextStyle(color: Colors.black),
+          "Chi tiết đơn hàng",
+          style: TextStyle(color: Colors.white),
         ),
         backgroundColor: Colors.blue,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
+        iconTheme: IconThemeData(color: Colors.white),
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Divider(height: 32),
-              Text(
-                'THÔNG TIN NGƯỜI NHẬN',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
+      body: Column(
+        children: [
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: SingleChildScrollView(
+                child:
+                    isLoading || gioHangs.isEmpty || user.tenKhachHang.isEmpty
+                        ? Center(
+                            child: CircularProgressIndicator(),
+                          )
+                        : Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "Thông tin người mua",
+                                style: TextStyle(
+                                    fontSize: 18, fontWeight: FontWeight.bold),
+                              ),
+                              SizedBox(height: 8),
+                              ListTile(
+                                leading: CircleAvatar(
+                                  backgroundImage: NetworkImage(
+                                      'https://static.vecteezy.com/system/resources/previews/014/194/215/original/avatar-icon-human-a-person-s-badge-social-media-profile-symbol-the-symbol-of-a-person-vector.jpg'),
+                                ),
+                                title: Text(user.tenKhachHang),
+                                subtitle: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(user.soDienThoai),
+                                    Text("${user.diaChi}")
+                                  ],
+                                ),
+                              ),
+                              Divider(),
+                              Text(
+                                "Thông tin đơn hàng",
+                                style: TextStyle(
+                                    fontSize: 18, fontWeight: FontWeight.bold),
+                              ),
+                              SizedBox(height: 8),
+                              ListView.builder(
+                                shrinkWrap: true,
+                                physics: NeverScrollableScrollPhysics(),
+                                itemCount: gioHangs.length,
+                                itemBuilder: (context, index) {
+                                  final item = gioHangs[index];
+                                  return OrderItemCard(
+                                      item: item,
+                                      onQuantityChanged: (newQuantity) {
+                                        _updateQuantity(index, newQuantity);
+                                      });
+                                },
+                              ),
+                            ],
+                          ),
               ),
-              SizedBox(height: 8),
-              Row(
-                children: [
-                  Radio<String>(
-                    value: 'Anh',
-                    groupValue: gioi_tinh,
-                    onChanged: (value) {
-                      setState(() {
-                        gioi_tinh = value;
-                        _genderError = null;
-                      });
-                    },
-                  ),
-                  Text('Anh'),
-                  SizedBox(width: 20),
-                  Radio<String>(
-                    value: 'Chị',
-                    groupValue: gioi_tinh,
-                    onChanged: (value) {
-                      setState(() {
-                        gioi_tinh = value;
-                        _genderError = null;
-                      });
-                    },
-                  ),
-                  Text('Chị'),
-                ],
-              ),
-              if (_genderError != null)
-                Padding(
-                  padding: const EdgeInsets.only(left: 12.0),
-                  child: Text(
-                    _genderError!,
-                    style: TextStyle(color: Colors.red, fontSize: 12),
-                  ),
-                ),
-              TextField(
-                controller: _nameController,
-                decoration: InputDecoration(
-                  labelText: 'Họ và tên người nhận',
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  errorText: _nameError,
-                ),
-              ),
-              SizedBox(height: 8),
-              TextField(
-                controller: _phoneController,
-                keyboardType: TextInputType.phone,
-                decoration: InputDecoration(
-                  labelText: 'Số điện thoại',
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  errorText: _phoneError,
-                ),
-              ),
-              SizedBox(height: 8),
-              TextField(
-                controller: _emailController,
-                keyboardType: TextInputType.emailAddress,
-                decoration: InputDecoration(
-                  labelText: 'Email',
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  errorText: _emailError,
-                ),
-              ),
-              SizedBox(height: 8),
-              TextField(
-                controller: _addressController,
-                decoration: InputDecoration(
-                  labelText: 'Địa chỉ',
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  errorText: _addressError,
-                ),
-              ),
-              SizedBox(height: 16),
-              Text(
-                'PHƯƠNG THỨC THANH TOÁN',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              SizedBox(height: 10),
-              Row(
-                children: [
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        setState(() {
-                          _selectedPaymentMethod = 'Chuyển khoản';
-                          _paymentError = null;
-                        });
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor:
-                            _selectedPaymentMethod == 'Chuyển khoản'
-                                ? Colors.blue
-                                : Colors.grey,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        minimumSize: Size(150, 50),
-                      ),
-                      child: Text(
-                        'Chuyển khoản',
-                        style: TextStyle(color: Colors.white, fontSize: 12),
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: 8),
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        setState(() {
-                          _selectedPaymentMethod = 'Tiền mặt';
-                          _paymentError = null;
-                        });
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: _selectedPaymentMethod == 'Tiền mặt'
-                            ? Colors.blue
-                            : Colors.grey,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        minimumSize: Size(150, 50),
-                      ),
-                      child: Text(
-                        'Tiền mặt',
-                        style: TextStyle(color: Colors.white, fontSize: 12),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              if (_paymentError != null)
-                Padding(
-                  padding: const EdgeInsets.only(top: 8.0, left: 12.0),
-                  child: Text(
-                    _paymentError!,
-                    style: TextStyle(color: Colors.red, fontSize: 12),
-                  ),
-                ),
-              SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Tổng tiền: ${tong_tien.toString()} đ',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      if (validateForm()) {
-                        _showConfirmDialog();
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      minimumSize: Size(200, 50),
-                    ),
-                    child: Text(
-                      'ĐẶT HÀNG',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ),
-                ],
-              ),
-            ],
+            ),
           ),
+          TotalPriceCard(orderItems: gioHangs),
+        ],
+      ),
+    );
+  }
+}
+
+class OrderItemCard extends StatelessWidget {
+  final Giohang_model item;
+  final Function(int) onQuantityChanged;
+  OrderItemCard({
+    required this.item,
+    required this.onQuantityChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 4,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Row(
+          children: [
+            Image.network(
+              item.hinhAnh,
+              width: 100,
+              height: 100,
+            ),
+            SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(item.tensanPham,
+                      style: TextStyle(fontWeight: FontWeight.bold)),
+                  SizedBox(height: 8),
+                  Text("Số lượng: ${item.soLuong}"),
+                  SizedBox(height: 8),
+                  Row(
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.remove),
+                        onPressed: () {
+                          if (item.soLuong > 1) {
+                            onQuantityChanged(item.soLuong - 1);
+                          }
+                        },
+                      ),
+                      Text(item.soLuong.toString()),
+                      IconButton(
+                        icon: Icon(Icons.add),
+                        onPressed: () {
+                          onQuantityChanged(item.soLuong + 1);
+                        },
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            Text("${item.Gia} VNĐ", style: TextStyle(color: Colors.orange)),
+          ],
         ),
       ),
     );
   }
+}
+
+class TotalPriceCard extends StatelessWidget {
+  final List<Giohang_model> orderItems;
+
+  TotalPriceCard({required this.orderItems});
 
   @override
-  void dispose() {
-    _nameController.dispose();
-    _phoneController.dispose();
-    _emailController.dispose();
-    _addressController.dispose();
-    super.dispose();
+  Widget build(BuildContext context) {
+    double totalPrice =
+        orderItems.fold(0, (sum, item) => sum + (item.Gia * item.soLuong));
+
+    return Container(
+      padding: EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 4,
+            offset: Offset(0, -2),
+          ),
+        ],
+      ),
+      child: SafeArea(
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Tổng thanh toán:',
+                    style: TextStyle(
+                      color: Colors.grey[600],
+                      fontSize: 14,
+                    ),
+                  ),
+                  Text(
+                    '$totalPrice VNĐ',
+                    style: TextStyle(
+                      color: Colors.red,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(width: 16),
+            ElevatedButton(
+              onPressed: () async {
+                // Gọi phương thức _datHang từ StatefulWidget
+                final state =
+                    context.findAncestorStateOfType<_thong_tin_mua_hang>();
+                if (state != null) {
+                  await state._datHang(
+                      totalPrice.toInt()); // Gọi hàm _datHang từ StatefulWidget
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+                padding: EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: Text(
+                'Đặt hàng',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

@@ -59,8 +59,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
       });
       return;
     }
+    if (gender == null) {
+      showSnackBar(context, "Vui lòng chọn giới tính");
+      setState(() {
+        isLoading = false;
+      });
+      return;
+    }
 
-    // Email validation
     bool isValidEmail(String email) {
       return email.toLowerCase().endsWith('@gmail.com');
     }
@@ -73,7 +79,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
       return;
     }
 
-    // Password validation
     if (password.length < 6) {
       showSnackBar(context, "Mật khẩu phải có ít nhất 6 ký tự");
       setState(() {
@@ -82,7 +87,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
       return;
     }
 
-    // Phone number validation
     if (!RegExp(r'^[0-9]{10}$').hasMatch(phone)) {
       showSnackBar(context, "Số điện thoại không hợp lệ");
       setState(() {
@@ -136,9 +140,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
       } else {
         showSnackBar(context, "Đăng ký thất bại, vui lòng thử lại");
       }
-    } catch (e) {
-      print('Error during sign-up: $e');
-      showSnackBar(context, "Lỗi kết nối: $e");
     } finally {
       setState(() {
         isLoading = false;
@@ -159,6 +160,25 @@ class _SignUpScreenState extends State<SignUpScreen> {
       body: SingleChildScrollView(
         child: Column(
           children: [
+            const SizedBox(height: 20), // Khoảng cách từ trên cùng
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Row(
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.arrow_back, size: 28),
+                    onPressed: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const LoginApp(),
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
             Padding(
               padding: const EdgeInsets.all(18),
               child: Image.asset(
@@ -173,62 +193,55 @@ class _SignUpScreenState extends State<SignUpScreen> {
               hintText: "Nhập tên đăng nhập",
               icon: Icons.person_outline,
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 5),
             TextFieldInput(
               textEditingController: nameController,
               hintText: "Nhập tên khách hàng",
               icon: Icons.person,
             ),
-            const SizedBox(height: 10),
-            // Giới tính với RadioButton nằm ngang
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Row(
-                  children: [
-                    Radio<String>(
-                      value: "Nam",
-                      groupValue: selectedGender,
-                      onChanged: (value) {
-                        setState(() {
-                          selectedGender = value;
-                        });
-                      },
+            const SizedBox(height: 5),
+            Padding(
+              padding:
+                  const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    "Chọn giới tính:",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
                     ),
-                    const Text("Nam"),
-                  ],
-                ),
-                Row(
-                  children: [
-                    Radio<String>(
-                      value: "Nữ",
-                      groupValue: selectedGender,
-                      onChanged: (value) {
-                        setState(() {
-                          selectedGender = value;
-                        });
-                      },
-                    ),
-                    const Text("Nữ"),
-                  ],
-                ),
-                Row(
-                  children: [
-                    Radio<String>(
-                      value: "Khác",
-                      groupValue: selectedGender,
-                      onChanged: (value) {
-                        setState(() {
-                          selectedGender = value;
-                        });
-                      },
-                    ),
-                    const Text("Khác"),
-                  ],
-                ),
-              ],
+                  ),
+                  Column(
+                    children: [
+                      RadioListTile<String>(
+                        title: const Text("Nam"),
+                        value: "Nam",
+                        groupValue: selectedGender,
+                        onChanged: (value) {
+                          setState(() {
+                            selectedGender = value;
+                          });
+                        },
+                      ),
+                      RadioListTile<String>(
+                        title: const Text("Nữ"),
+                        value: "Nữ",
+                        groupValue: selectedGender,
+                        onChanged: (value) {
+                          setState(() {
+                            selectedGender = value;
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 5),
             TextFieldInput(
               textEditingController: addressController,
               hintText: "Nhập địa chỉ",
